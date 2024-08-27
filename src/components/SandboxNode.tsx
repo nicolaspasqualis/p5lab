@@ -139,12 +139,13 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
             </script>
             <script defer> 
               {
-                ${controls.toString()}
-                window.controls = ${controls.name}
-                console.log("CTRLZZ", window.controls.name)
+               
+                window.p5lab = {
+                  controls:  ${controls.toString()}
+                }
+                
               }
             </script>
-            <script defer> console.log(controls.toString())</script>
             <script defer> ${code}</script>
             
             <script defer>

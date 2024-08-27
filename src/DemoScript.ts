@@ -3,7 +3,7 @@ export default (
 `let insideRadius = 100;
 let outsideRadius = 150;
 
-const params = controls({
+const params = p5lab.controls({
   points: {
     type: "range", min: 2, max: 12, step: 1, 
     initialValue: 3,

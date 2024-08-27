@@ -102,7 +102,7 @@ const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
       </div>
       <div className='m-2'>
         {Object.entries(data.controller).map(
-          ([key, control]) => <div className="mb-2">
+          ([key, control]) => <div key={key} className="mb-2">
             {renderControl(key, control)}
           </div>
         )}
