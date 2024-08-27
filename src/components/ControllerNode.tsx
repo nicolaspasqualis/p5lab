@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections } from '@xyflow/react';
-import { Editor } from '@monaco-editor/react';
 import { Button } from './Button';
 import { ControlDescriptor, Controller } from '../types/types';
 import { Slider } from './controls/Slider';
-import * as Switch from '@radix-ui/react-switch';
 import { Toggle } from './controls/Toggle';
 import { Color } from './controls/Color';
 import { Select } from './controls/Select';

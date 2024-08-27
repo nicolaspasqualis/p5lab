@@ -7,7 +7,8 @@ import NodeInspector from './NodeInspector';
 import ViewportLogger from './ViewportLogger';
 import { Controller } from '../types/types';
 import DemoScript from '../DemoScript';
-import {ReactFlow,
+import {
+  ReactFlow,
   ReactFlowProvider,
   addEdge,
   useNodesState,

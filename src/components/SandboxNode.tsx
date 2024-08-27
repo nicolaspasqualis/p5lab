@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, Panel, NodeToolbar } from '@xyflow/react';
+import React, { useEffect, useRef } from 'react';
+import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow } from '@xyflow/react';
 import { Button } from './Button';
 import { ControlUpdateMessage, Controller } from '../types/types';
 import { Toggle } from './controls/Toggle';

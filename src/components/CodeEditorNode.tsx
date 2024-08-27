@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position, NodeResizer, NodeToolbar, useReactFlow } from '@xyflow/react';
+import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react';
 import { Editor } from '@monaco-editor/react';
 import { Button } from './Button';
 

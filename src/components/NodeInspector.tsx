@@ -1,6 +1,5 @@
 import { useNodes, EdgeLabelRenderer } from '@xyflow/react';
 import { useState } from 'react';
-import { Button } from './Button';
 
 export default function NodeInspector() {
   const nodes = useNodes();
