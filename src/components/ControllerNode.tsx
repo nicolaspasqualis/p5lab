@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections } from '@xyflow/react';
 import { Button } from './Button';
 import { ControlDescriptor, Controller } from '../types/types';

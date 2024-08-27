@@ -1,4 +1,3 @@
-import React from 'react'
 import FlowEditor from './components/FlowEditor'
 
 import '@xyflow/react/dist/style.css';
