@@ -5,6 +5,16 @@ add basic p5 features to sandbox ui
     record?
     rerun/restart sketch
 
+nodes & ocnnections!
+    logging/debugging node 
+    user-definable inputs/outputs? 
+        js api? p5lab.input("some input", { type: "control"...})
+
+copy/paste/duplicate
+
+better p5lab api for use in sketch code
+    wrap p5 globals?
+
 style ui
 
 santize sandbox messages
@@ -13,3 +23,10 @@ santize sandbox messages
 debounce output messages
 error catching on sb?
 
+autocomplete
+p5 reference
+
+
+maybe
+    pin to screen option?
+    support generic html/js sandbox instead of p5 template?
