@@ -1,0 +1,101 @@
+.react-flow__devtools {
+    --border-radius: 4px;
+    --highlight-color: rgba(238, 58, 115, 1);
+    --font: monospace, sans-serif;
+    --font-size: 10px;
+    --line-height: 1.26;
+  
+    border-radius: var(--border-radius);
+  
+    font-family: var(--font);
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  }
+  
+  .react-flow__devtools button {
+    background: white;
+    border: none;
+    padding: 5px 15px;
+    color: #222;
+    cursor: pointer;
+    font-family: var(--font);
+  
+    --font-size: 10px;
+    --line-height: 1.26;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    background-color: #f4f4f4;
+    border-right: 1px solid #ddd;
+  }
+  
+  .react-flow__devtools button:hover {
+    background: var(--highlight-color);
+    opacity: 0.8;
+    color: white;
+  }
+  
+  .react-flow__devtools button.active {
+    background: var(--highlight-color);
+    color: white;
+  }
+  
+  .react-flow__devtools button:first-child {
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+  }
+  
+  .react-flow__devtools button:last-child {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    border-right: none;
+  }
+  
+  .react-flow__devtools-changelogger {
+    position: relative;
+    top: 50px;
+
+    --font: 'Menlo', sans-serif;
+    font-family: var(--font);
+  
+    --font-size: 10px;
+    --line-height: 1.26;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  }
+  
+  .react-flow__devtools-title {
+    --font: monospace, sans-serif;
+    font-family: var(--font);
+  
+    --font-size: 10px;
+    --line-height: 1.26;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+    font-weight: 800;
+  }
+  
+  .react-flow__devtools-nodeinspector {
+    font-family: monospace, sans-serif;
+    
+  
+    --font-size: 10px;
+    --line-height: 1.26;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  }
+  
+  .react-flow__devtools-nodeinfo {
+    top: 5px;
+
+    --font-size: 10px;
+    --line-height: 1.26;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  }
+
+  .react-flow__devtools-viewportinfo {
+
+    font-family: monospace, sans-serif;
+    --font-size: 10px;
+    --line-height: 1.26;
+    font-size: var(--font-size);
+    line-height: var(--line-height);
+  }
