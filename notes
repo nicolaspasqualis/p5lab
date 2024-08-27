@@ -4,24 +4,39 @@ add basic p5 features to sandbox ui
     save canvas
     record?
     rerun/restart sketch
+    toggle friendly error system 
 
 nodes & ocnnections!
     logging/debugging node 
+        metrics? avg, framerate, time, deltatime,
+            cpu usage?
     user-definable inputs/outputs? 
         js api? p5lab.input("some input", { type: "control"...})
+    control nodes 
+        range/Slider
+        button 
+        checkbox 
+        select (radio?)
+        text
+        envelopes
+            bezier/segments/breakpoints
+
 
 copy/paste/duplicate
 
 better p5lab api for use in sketch code
     wrap p5 globals?
 
+import/export as new tabs
+
 style ui
 
-santize sandbox messages
+!verify sandbox isolation from parent context
+!!! santize sandbox messages
     object/function rerialization
     sanitize control definitions and values
-debounce output messages
-error catching on sb?
+!!! debounce output messages
+!!! error catching on sb?
 
 autocomplete
 p5 reference
