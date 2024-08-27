@@ -245,7 +245,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
     <div className="bg-white border w-full h-full flex flex-col">
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
       <Handle type="target" id="code" position={Position.Left} isConnectable={false}/>
-      <Handle type="target" id="controller" position={Position.Bottom} className='left-4' isConnectable={false}/>
+      <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
         <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
         <Toggle label={"loop"} value={false} onChange={()=>{}} showValue={false}></Toggle>
@@ -258,8 +258,6 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
         sandbox="allow-scripts"
         className={'h-full w-full object-contain block p-1'}
       />
-
-    {/* <span className='h-1 absolute right-2 bottom-0'>asd</span> */}
     </div>
   );
 };

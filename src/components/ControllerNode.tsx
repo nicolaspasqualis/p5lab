@@ -96,8 +96,9 @@ const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
   return (
     <div className="bg-white border w-full h-full">
       <NodeResizer minWidth={160}/>
-      <Handle type="source" id="sandbox" position={Position.Top} className='left-4' isConnectable={false} />
-      <div className="w-full node-drag-handle border-b" >
+      <Handle type="source" id="sandbox" position={Position.Top} className='left-3' isConnectable={false} />
+      <div className="w-full node-drag-handle border-b flex flex-row text-sm">
+        <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
         <Button onClick={() => console.warn("not implemented")}>↺</Button>
       </div>
       <div className='m-2'>
