@@ -137,9 +137,16 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
                 controller: JSON.parse(\`${UNSAFE_STATE_ENCODING}\`),
               };
             </script>
-            <script defer> ${controls.toString()}</script>
+            <script defer> 
+              {
+                ${controls.toString()}
+                window.controls = ${controls.name}
+                console.log("CTRLZZ", window.controls.name)
+              }
+            </script>
             <script defer> console.log(controls.toString())</script>
             <script defer> ${code}</script>
+            
             <script defer>
               window.parent.postMessage({type: '${MessageType.CODE_EXECUTED}', sandboxId: "${data.id}", runId: "${runId}"}, '*');
             </script>
