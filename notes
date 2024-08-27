@@ -1,0 +1,15 @@
+console outputs
+add basic p5 features to sandbox ui 
+    freeze/loop/noLoop
+    save canvas
+    record?
+    rerun/restart sketch
+
+style ui
+
+santize sandbox messages
+    object/function rerialization
+    sanitize control definitions and values
+debounce output messages
+error catching on sb?
+
