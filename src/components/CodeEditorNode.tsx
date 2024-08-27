@@ -2,6 +2,7 @@ import React from 'react';
 import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react';
 import { Editor } from '@monaco-editor/react';
 import { Button } from './Button';
+import { Toggle } from './controls/Toggle';
 
 interface CodeEditorNodeProps {
   data: { 
@@ -18,7 +19,8 @@ const CodeEditorNode: React.FC<CodeEditorNodeProps> = ({ data }) => {
     <div className="bg-white border w-full h-full">
       <NodeResizer />
       <Handle type="source" id="sandbox" position={Position.Right} className="top-4"isConnectable={false}/>
-      <div className="w-full node-drag-handle border-b" >
+      <div className="w-full node-drag-handle border-b flex flex-row text-sm">
+        <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
         <Button onClick={() => data.onAddSandbox(data.id)}>▷</Button>
       </div>
       <div className='w-full h-full '>

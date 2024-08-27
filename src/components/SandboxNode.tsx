@@ -247,7 +247,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
       <Handle type="target" id="code" position={Position.Left} isConnectable={false}/>
       <Handle type="target" id="controller" position={Position.Bottom} className='left-4' isConnectable={false}/>
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
-        <span className='flex-grow mx-1'> <span className=" font-mono text-xs">{data.id}</span></span>
+        <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
         <Toggle label={"loop"} value={false} onChange={()=>{}} showValue={false}></Toggle>
         <Button onClick={runCode}>↺</Button>
       </div>
