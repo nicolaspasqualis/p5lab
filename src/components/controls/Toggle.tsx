@@ -8,7 +8,7 @@ interface ToggleProps {
 }
 
 export const Toggle = ({ label, value, onChange, showValue=true }: ToggleProps) => (
-  <label className="flex flex-row gap-2">
+  <label className="flex flex-row gap-1">
     <span className="text-sm flex-grow">
       {label}{showValue && <>: <span className="text-xs text-right text-gray-500 font-mono">{value.toString()}</span></>}
     </span>
