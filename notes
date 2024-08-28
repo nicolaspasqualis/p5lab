@@ -1,31 +1,24 @@
 console outputs
 add basic p5 features to sandbox ui 
-    freeze/loop/noLoop
-    save canvas
     record?
-    rerun/restart sketch
     toggle friendly error system 
 
 nodes & ocnnections!
     console.log with serialization
-    logging/debugging node 
-        metrics? avg, framerate, time, deltatime,
-            cpu usage?
-    user-definable inputs/outputs? 
-        js api? p5lab.input("some input", { type: "control"...})
+    multiple ports/nodes/controllers support
+    metrics? avg, framerate, time, deltatime, cpu usage?
+    user-definable inputs/outputs? js api? p5lab.input("some input", { type: "control"...})
     control nodes 
-        range/Slider
         button 
-        checkbox 
-        select (radio?)
         text
-        envelopes
-            bezier/segments/breakpoints
+        envelopes e.g bezier/segments/breakpoints
+    
 
 
 copy/paste/duplicate
 
 better p5lab api for use in sketch code
+    override windowResized by default?
     wrap p5 globals?
 
 import/export as new tabs
