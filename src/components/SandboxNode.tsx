@@ -181,6 +181,11 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
               }
             }</script>
             <script defer>
+              function windowResized() {
+                resizeCanvas(windowWidth, windowHeight)
+              }
+            </script>
+            <script defer>
               ${code}
             </script>
             <script>
