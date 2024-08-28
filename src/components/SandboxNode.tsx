@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow } from '@xyflow/react';
 import { Button } from './Button';
 import { ControlUpdateMessage, Controller } from '../types/types';
@@ -18,6 +18,8 @@ declare global {
       id: string;
       runId: string;
       controller: Controller;
+      loop: (shouldLoop: boolean) => void;
+      draw: () => void;
     }
     control: () => void;
   }
@@ -27,7 +29,8 @@ const MessageType = {
   CONSOLE_LOG: "console-log",
   CODE_EXECUTED: "code-executed",
   CONTROLLER_REGISTRATION: "controller-registration",
-  CONTROLLER_UPDATE: "controller-update"
+  CONTROLLER_UPDATE: "controller-update",
+  EVAL: "eval",
 }
 
 // This needs to be a function without external dependencies 
@@ -36,12 +39,29 @@ const MessageType = {
 // necessary dependencies as declared in ~global~.
 // This function is injected into the iframe sandbox by converting it
 // to string (controls.toString()) and then evaluated as a <script/>
+function initScript () {
+  const InternalMessageType: typeof MessageType = {
+    CONSOLE_LOG: "console-log",
+    CODE_EXECUTED: "code-executed",
+    CONTROLLER_REGISTRATION: "controller-registration",
+    CONTROLLER_UPDATE: "controller-update",
+    EVAL: "eval",
+  }
+
+  window.addEventListener('message', function(event) {
+    if (event.data.type === InternalMessageType.EVAL) {
+      eval(event.data.expression);
+      return;
+    }
+  });
+}
 function controls(controller: Controller){
   const InternalMessageType: typeof MessageType = {
     CONSOLE_LOG: "console-log",
     CODE_EXECUTED: "code-executed",
     CONTROLLER_REGISTRATION: "controller-registration",
-    CONTROLLER_UPDATE: "controller-update"
+    CONTROLLER_UPDATE: "controller-update",
+    EVAL: "eval",
   }
 
   /**
@@ -64,6 +84,7 @@ function controls(controller: Controller){
     const control = sketchControls[source];
     if (control) {
       control.currentValue = value;
+      window._sandbox_internals.draw();
     }
   }
 
@@ -74,7 +95,6 @@ function controls(controller: Controller){
         handleControllerUpdate(event.data as ControlUpdateMessage);
         return;
     }
-
   });
 
   window.parent.postMessage({
@@ -98,6 +118,8 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
   const controllerNode = controllerNodes.filter((node: any) => node.type === "controller")[0];
 
+  const [loop, setLoop] = useState(true);
+
   if(controllerNodes.length >= 2) {console.warn(" 2 CONTROLLERS DETECTED")}
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -106,6 +128,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
 
   const getRunId = () => String(runNumber.current);
 
+  
 
   const runCode = () => {
     runNumber.current++;
@@ -135,19 +158,31 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
                 id: "${data.id}",
                 runId: "${runId}",
                 controller: JSON.parse(\`${UNSAFE_STATE_ENCODING}\`),
+                loop: (shouldLoop) => {
+                  if(shouldLoop && !isLooping()){
+                    loop()
+                  } else {
+                    noLoop()
+                  }
+                },
+                draw: () => {
+                  if (!isLooping()) {
+                    redraw();
+                  }
+                }
               };
             </script>
-            <script defer> 
-              {
-               
-                window.p5lab = {
-                  controls:  ${controls.toString()}
-                }
-                
-              }
+            <script defer>
+              (${initScript.toString()})()
             </script>
-            <script defer> ${code}</script>
-            
+            <script defer>{
+              window.p5lab = {
+                controls: ${controls.toString()}
+              }
+            }</script>
+            <script defer>
+              ${code}
+            </script>
             <script defer>
               window.parent.postMessage({type: '${MessageType.CODE_EXECUTED}', sandboxId: "${data.id}", runId: "${runId}"}, '*');
             </script>
@@ -180,6 +215,24 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
     }
   }
 
+  const handleLoopToggle = () => {
+    const toggledLoop = !loop;
+    setLoop(toggledLoop);
+    const sandbox = iframeRef.current as HTMLIFrameElement;
+    const elem = document.getElementById(data.id)as HTMLIFrameElement;
+    if (sandbox && elem && elem.contentWindow) {
+      elem.contentWindow.postMessage({type: MessageType.EVAL, expression: `window._sandbox_internals.loop(${toggledLoop})`}, '*');
+    }
+  }
+
+  const handleImgDownload = () => {
+    const sandbox = iframeRef.current as HTMLIFrameElement;
+    const elem = document.getElementById(data.id)as HTMLIFrameElement;
+    if (sandbox && elem && elem.contentWindow) {
+      elem.contentWindow.postMessage({type: MessageType.EVAL, expression: `saveCanvas('${data.id}')`}, '*');
+    }
+  }
+
   const handleControlUpdate = (key: string, value: number) => {
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id)as HTMLIFrameElement;
@@ -189,12 +242,10 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
   }
 
   const handleControllerRegistration = (newController: Controller) => {
-    // esto podria pasarse al onAddController como un targetUpdateHandler?
     if(!data.onControlUpdate) {
       updateNodeData(data.id, {onControlUpdate: handleControlUpdate})
     }
 
-    console.log(newController)
     if(controllerNode) {
       console.log("updating controller", controllerNode.data.id, newController)
       updateNodeData(controllerNode.data.id as string, { 
@@ -207,7 +258,6 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
   }
 
   useEffect(() => {
-    console.log("RUN CODE EFFECT TRIGGER")
    runCode();
   }, [code, data]);
 
@@ -225,7 +275,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
         return;
       }
 
-      if (event.data.type === 'console') {
+      if (event.data.type === MessageType.CONSOLE_LOG) {
         console.log(`Sandbox ${event.data.sandboxId}:`, ...event.data.content);
         return
       }
@@ -248,14 +298,17 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
         <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
-        <Toggle label={"loop"} value={false} onChange={()=>{}} showValue={false}></Toggle>
+        <Button onClick={handleImgDownload}><span className=" text-xs" >img</span></Button>
+        <Toggle label={"loop"} value={loop} onChange={handleLoopToggle} showValue={false}></Toggle>
         <Button onClick={runCode}>↺</Button>
       </div>
       <iframe
         ref={iframeRef}
         id={data.id}
         title={`Sandbox ${data.id}`}
-        sandbox="allow-scripts"
+        sandbox="allow-forms allow-modals allow-pointer-lock allow-popups 
+         allow-scripts allow-top-navigation-by-user-activation allow-downloads"
+        
         className={'h-full w-full object-contain block p-1'}
       />
     </div>

@@ -37,6 +37,8 @@ function windowResized() {
 
 function draw() {
   background(255);
+  stroke(0);
+  text(frameCount, 10,10);
   stroke(255);
 
   const centerX = width / 2;
