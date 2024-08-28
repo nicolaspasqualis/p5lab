@@ -314,12 +314,9 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>
       <div className="w-full node-drag-handle border-b flex flex-row text-sm gap-1">
         <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
-        
         <Toggle label={"loop"} value={loop} onChange={handleLoopToggle} showValue={false}></Toggle>
-
         <span className='text-gray-300'>|</span>
         <Button onClick={handleImgDownload} className='px-1 text-sm rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'>img</Button>
-        
         <span className='text-gray-300'>|</span>
         <Button onClick={runCode}>↺</Button>
       </div>

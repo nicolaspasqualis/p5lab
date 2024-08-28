@@ -12,14 +12,10 @@ nodes & ocnnections!
         button 
         text
         envelopes e.g bezier/segments/breakpoints
-    
-
 
 copy/paste/duplicate
 
 better p5lab api for use in sketch code
-    override windowResized by default?
-    wrap p5 globals?
 
 import/export as new tabs
 
