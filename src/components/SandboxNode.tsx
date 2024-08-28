@@ -3,6 +3,7 @@ import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useR
 import { Button } from './Button';
 import { ControlUpdateMessage, Controller } from '../types/types';
 import { Toggle } from './controls/Toggle';
+import { useDebouncedCallback } from 'use-debounce';
 
 export interface SandboxNodeProps {
   data: { 
@@ -211,6 +212,8 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
     }
   }
 
+  const runCodeDebounced = useDebouncedCallback(runCode, 1000);
+
   const handleCodeExecuted = () => {
     console.log(`${data.id}: EXECUTED`);
     const elem = document.getElementById(data.id)as HTMLIFrameElement;
@@ -274,7 +277,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
   }
 
   useEffect(() => {
-   runCode();
+    runCodeDebounced();
   }, [code, data]);
 
   
