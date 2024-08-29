@@ -9,7 +9,6 @@ nodes & ocnnections!
     metrics? avg, framerate, time, deltatime, cpu usage?
     user-definable inputs/outputs? js api? p5lab.input("some input", { type: "control"...})
     control nodes 
-        text
         envelopes e.g bezier/segments/breakpoints
 
 copy/paste/duplicate
@@ -18,7 +17,11 @@ better p5lab api for use in sketch code
 
 import/export as new tabs
 
+make mouse events only captured by the selected node?
+
 style ui
+
+debounce control changes
 
 ??? force cross-origin treatment so each runs in a separate thread?
 !!! verify sandbox isolation from parent context
@@ -30,7 +33,6 @@ style ui
 
 autocomplete
 p5 reference
-
 
 maybe
     pin to screen option?

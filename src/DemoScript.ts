@@ -3,7 +3,7 @@ export default (
 `let insideRadius = 100;
 let outsideRadius = 150;
 
-const {points, button} = p5lab.controls({
+const {points, button, someText} = p5lab.controls({
   points: {
     type: "range", min: 2, max: 12, step: 1, 
     value: 3,
@@ -25,8 +25,8 @@ const {points, button} = p5lab.controls({
   },
   button: {
     type: 'button', onChange: () => { console.log("BUTTTTONNNNEE") },
-  }
-  text: { type: 'text', value: "hi!!"}
+  },
+  someText: { type: 'text', value: "hi!!"}
 })
 
 function setup() {
@@ -41,6 +41,9 @@ function windowResized() {
 
 function draw() {
   background(255);
+  noStroke()
+  fill(0)
+  text(someText.value, 20, 20)
   stroke(255);
 
   const centerX = width / 2;
