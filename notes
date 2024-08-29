@@ -21,6 +21,9 @@ import/export as new tabs
 
 style ui
 
+
+?: force cross-origin treatment so each runs in a separate thread?
+
 !verify sandbox isolation from parent context
 !!! santize sandbox messages
     object/function rerialization

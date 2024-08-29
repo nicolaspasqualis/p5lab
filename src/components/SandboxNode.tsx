@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow } from '@xyflow/react';
 import { Button } from './Button';
-import { ControlUpdateMessage, Controller } from '../types/types';
+import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor } from '../types/types';
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -9,7 +9,7 @@ export interface SandboxNodeProps {
   data: { 
     id: string;
     onControlUpdate: (key: string, value: number) => void;
-    onAddController: (sandboxId: string, controller: Controller) => void;
+    onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
   };
 }
 
@@ -18,7 +18,7 @@ declare global {
     _sandbox_internals: {
       id: string;
       runId: string;
-      controller: Controller;
+      controller: ControllerDescriptor;
       loop: (shouldLoop: boolean) => void;
       draw: () => void;
     }
@@ -56,7 +56,22 @@ function initScript () {
     }
   });
 }
-function controls(controller: Controller){
+
+type SandboxControl = {
+  value: number | boolean | string,
+  type: ControlType,
+  min?: number,
+  max?: number,
+  step?: number,
+  options?: string[],
+  onChange?: (value: ControlValue) => void,
+}
+
+type SandboxController = {
+  [key: string]: SandboxControl,
+}
+
+function controls(newSBController: SandboxController) {
   const InternalMessageType: typeof MessageType = {
     CONSOLE_LOG: "console-log",
     CODE_EXECUTED: "code-executed",
@@ -68,25 +83,43 @@ function controls(controller: Controller){
   /**
    * should set current values from running controller state
    */
-  const sketchControls: Controller = {...controller};
+  const sandboxController: SandboxController = {...newSBController};
 
-  Object.entries(sketchControls).forEach(([key, controlDesc]) => {
+  const registeredController: ControllerDescriptor = Object.fromEntries(
+    Object.entries(sandboxController).map(
+      ([key, control]) => [key, {
+        initialValue: control.value,
+        currentValue: control.value,
+        type: control.type,
+        min: control.min,
+        max: control.max,
+        step: control.step,
+        options: control.options
+      }]
+    )
+  )
+
+  Object.entries(sandboxController).forEach(([key, controlDesc]) => {
     const foundControl = window._sandbox_internals.controller[key];
-
     //TODO make sure the existing control state is valid for the new definition. 
     //(sanitize values before applying)
-    sketchControls[key].currentValue = foundControl?.currentValue || controlDesc.initialValue;
-   
+    const currentValue = foundControl?.currentValue || controlDesc.value;
+    sandboxController[key].value = currentValue;
+    registeredController[key].currentValue = currentValue;
   })
 
   function handleControllerUpdate (update: ControlUpdateMessage) {
     const {source, value} = update;
+    const control = sandboxController[source];
 
-    const control = sketchControls[source];
-    if (control) {
-      control.currentValue = value;
-      window._sandbox_internals.draw();
+    if (!control) { return; }
+
+    control.value = value;
+    if (control.onChange) {
+      control.onChange(value);
     }
+
+    window._sandbox_internals.draw();
   }
 
   window.addEventListener('message', function(event) {
@@ -97,15 +130,17 @@ function controls(controller: Controller){
         return;
     }
   });
+  
+  
 
   window.parent.postMessage({
     type: InternalMessageType.CONTROLLER_REGISTRATION, 
     sandboxId: window._sandbox_internals.id, 
     runId: window._sandbox_internals.runId,
-    content: {...controller}
+    content: {...registeredController}
   }, '*');
 
-  return sketchControls;
+  return sandboxController;
 }
 
 const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
@@ -135,11 +170,11 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
     runNumber.current++;
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id)as HTMLIFrameElement;
-    console.log("CONTROLLER STATE", JSON.stringify(controllerNode?.data.controller as Controller || {}))
+    console.log("CONTROLLER STATE", JSON.stringify(controllerNode?.data.controller as ControllerDescriptor || {}))
 
     // TODO add encoding step to ensure safe javascript output (e.g backticks)
     // maybe use a function that can convert an object to literal format/representation
-    const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as Controller || {})); 
+    const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as ControllerDescriptor || {})); 
 
     if (sandbox && elem) {
       const runId = getRunId();
@@ -260,7 +295,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
     }
   }
 
-  const handleControllerRegistration = (newController: Controller) => {
+  const handleControllerRegistration = (newController: ControllerDescriptor) => {
     if(!data.onControlUpdate) {
       updateNodeData(data.id, {onControlUpdate: handleControlUpdate})
     }

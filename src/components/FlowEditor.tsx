@@ -5,7 +5,7 @@ import ControllerNode from './ControllerNode';
 import { Button } from './Button';
 import NodeInspector from './NodeInspector';
 import ViewportLogger from './ViewportLogger';
-import { Controller } from '../types/types';
+import { ControllerDescriptor } from '../types/types';
 import DemoScript from '../DemoScript';
 import {
   ReactFlow,
@@ -54,7 +54,7 @@ const defaultSandboxHeight = 360;
 const defaultControllerWidth = 180;
 
 const CreateSandboxNode = (
-  id: string, onAddController: (sandboxId: string, controller: Controller) => void, 
+  id: string, onAddController: (sandboxId: string, controller: ControllerDescriptor) => void, 
   position: XYPosition, width?: number, height?: number
 ) => {
   const node: Node = {
@@ -72,7 +72,7 @@ const CreateSandboxNode = (
   return node;
 }
 
-const CreateControllerNode = (id: string, controller: Controller, position: XYPosition) => {
+const CreateControllerNode = (id: string, controller: ControllerDescriptor, position: XYPosition) => {
   const node: Node = {
     ...BaseNodeAttributes,
     id,
@@ -240,7 +240,7 @@ const FlowEditor: React.FC = () => {
     setEdges((eds) => eds.concat(newEdge));
   }, [setNodes, setEdges]);
 
-  const addController = useCallback((sandboxId: string, controller: Controller) => {
+  const addController = useCallback((sandboxId: string, controller: ControllerDescriptor) => {
     const sandboxNode = getNode(sandboxId);
     if (!sandboxNode) {
       console.warn("controller created for a non-existent sandbox");

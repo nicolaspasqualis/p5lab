@@ -6,22 +6,22 @@ let outsideRadius = 150;
 const params = p5lab.controls({
   points: {
     type: "range", min: 2, max: 12, step: 1, 
-    initialValue: 3,
+    value: 3,
   },
   morePointz: {
     type: "range", min: 2, max: 12, step: 1, 
-    initialValue: 3,
+    value: 3,
   },
   color: {
     type: "color", min: 2, max: 12, step: 1, 
-    initialValue: "#ff00ff",
+    value: "#ff00ff",
   },
   checkbox: {
     type: "checkbox", initialValue: false,
   },
   color2: {
     type: "select", options: ["color", "white", "black"], 
-    initialValue: "color",
+    value: "color",
   }
 })
 
