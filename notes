@@ -9,7 +9,6 @@ nodes & ocnnections!
     metrics? avg, framerate, time, deltatime, cpu usage?
     user-definable inputs/outputs? js api? p5lab.input("some input", { type: "control"...})
     control nodes 
-        button 
         text
         envelopes e.g bezier/segments/breakpoints
 
@@ -21,10 +20,8 @@ import/export as new tabs
 
 style ui
 
-
-?: force cross-origin treatment so each runs in a separate thread?
-
-!verify sandbox isolation from parent context
+??? force cross-origin treatment so each runs in a separate thread?
+!!! verify sandbox isolation from parent context
 !!! santize sandbox messages
     object/function rerialization
     sanitize control definitions and values
