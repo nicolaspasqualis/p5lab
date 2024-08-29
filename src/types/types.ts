@@ -2,7 +2,7 @@ export type ControllerDescriptor = {
   [key: string]: ControlDescriptor
 }
 
-export type ControlType = 'range' | 'checkbox' | 'color' | 'select';
+export type ControlType = 'range' | 'checkbox' | 'color' | 'select' | 'button' | 'text';
 export type ControlValue = number | boolean | string;
 
 // i can think about two types of controllers; ones for state and ones for 

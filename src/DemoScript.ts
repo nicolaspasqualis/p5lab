@@ -3,7 +3,7 @@ export default (
 `let insideRadius = 100;
 let outsideRadius = 150;
 
-const params = p5lab.controls({
+const {points, button} = p5lab.controls({
   points: {
     type: "range", min: 2, max: 12, step: 1, 
     value: 3,
@@ -22,7 +22,11 @@ const params = p5lab.controls({
   color2: {
     type: "select", options: ["color", "white", "black"], 
     value: "color",
+  },
+  button: {
+    type: 'button', onChange: () => { console.log("BUTTTTONNNNEE") },
   }
+  text: { type: 'text', value: "hi!!"}
 })
 
 function setup() {
@@ -41,7 +45,7 @@ function draw() {
 
   const centerX = width / 2;
   const centerY = height / 2;
-  const pointCount = round(params.points.currentValue);
+  const pointCount = round(points.value);
   const angleStep = 180.0 / pointCount;
 
   let angle = 0;

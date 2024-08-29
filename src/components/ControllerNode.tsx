@@ -1,11 +1,13 @@
 import React from 'react';
 import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections } from '@xyflow/react';
-import { Button } from './Button';
+import { Button } from './controls/Button';
+import { Button as UIButton } from './Button';
 import { ControlDescriptor, ControllerDescriptor } from '../types/types';
 import { Slider } from './controls/Slider';
 import { Toggle } from './controls/Toggle';
 import { Color } from './controls/Color';
 import { Select } from './controls/Select';
+import { TextControl } from './controls/TextControl';
 
 
 interface ControllerNodeProps {
@@ -89,6 +91,17 @@ const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
           handleControlUpdate(key, value);
         }}
       />
+      case 'button': return <Button
+        label={key}
+        onClick={()=>{ handleControlUpdate(key, key) }}
+
+      />
+      case 'text': return <TextControl
+        label={key}
+        value={String(control.currentValue)}
+        onChange={(value) => {handleControlUpdate(key, value)}}
+
+      />
       default: return null;
     }
   };
@@ -99,7 +112,7 @@ const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
       <Handle type="source" id="sandbox" position={Position.Top} className='left-3' isConnectable={false} />
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
         <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
-        <Button onClick={() => console.warn("not implemented")}>↺</Button>
+        <UIButton onClick={() => console.warn("not implemented")}>↺</UIButton>
       </div>
       <div className='m-2'>
         {Object.entries(data.controller).map(
