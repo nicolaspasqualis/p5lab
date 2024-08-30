@@ -31,11 +31,13 @@ import {
 
 import '@xyflow/react/dist/style.css';
 import './../react-flow.css';
+import MarkdownNode from './MarkdownNode';
 
 const nodeTypes: NodeTypes = {
   codeEditor: CodeEditorNode,
   sandbox: SandboxNode,
   controller: ControllerNode,
+  markdown: MarkdownNode,
 };
 
 type StoredState = {
@@ -52,6 +54,8 @@ const defaultEditorHeight = 920;
 const defaultSandboxWidth = 360;
 const defaultSandboxHeight = 360;
 const defaultControllerWidth = 180;
+const defaultMarkdownWidth = 480;
+const defaultMarkdownHeight = 920;
 
 const CreateSandboxNode = (
   id: string, onAddController: (sandboxId: string, controller: ControllerDescriptor) => void, 
@@ -100,6 +104,23 @@ const CreateEditorNode = (id:string, onAddSandbox: (editorId: string) => void, p
     position,
     width: defaultEditorWidth,
     height: defaultEditorHeight,
+  };
+  return node;
+}
+
+
+const CreateMarkdownNode = (id:string, position: XYPosition) => {
+  const node: Node = {
+    ...BaseNodeAttributes,
+    id,
+    type: 'markdown',
+    data: { 
+      id,
+      markdown: "", 
+    },
+    position,
+    width: defaultMarkdownWidth,
+    height: defaultMarkdownHeight,
   };
   return node;
 }
@@ -266,6 +287,15 @@ const FlowEditor: React.FC = () => {
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
 
+
+  const addMarkdown = useCallback(() => {
+    const id = generateId('markdown');
+    const {x, y} = screenToFlowPosition({x: 100, y:100});
+    const newNode: Node = CreateMarkdownNode(id, {x, y});
+
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
+
   const toggleInfo = () => {
     setShowInfo(prev => !prev);
   }
@@ -312,6 +342,7 @@ const FlowEditor: React.FC = () => {
             </label>
             <span className='text-gray-300'>|</span>
             <Button onClick={addEditor}>+ code</Button>
+            <Button onClick={addMarkdown}>+ md</Button>
             <Button onClick={toggleInfo}>⌗ info</Button> 
           </div>
         </Panel>

@@ -4,7 +4,7 @@
 
 
 :root {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: Inter variable, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-size: 14px;
@@ -34,9 +34,32 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 4rem;
   line-height: 1.1;
 }
+
+h2 {
+  font-size: 3.2rem;
+  line-height: 1.1;
+}
+
+h3 {
+  font-size: 2.8rem;
+  line-height: 1.1;
+}
+h4 {
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+h5 {
+  font-size: 1.4rem;
+  line-height: 1.1;
+}
+h6 {
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
 
 button {
   border-radius: 8px;
