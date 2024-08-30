@@ -8,6 +8,7 @@ import { useDebouncedCallback } from 'use-debounce';
 export interface SandboxNodeProps {
   data: { 
     id: string;
+    loop: boolean;
     onControlUpdate: (key: string, value: number) => void;
     onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
   };
@@ -154,7 +155,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
   const controllerNode = controllerNodes.filter((node: any) => node.type === "controller")[0];
 
-  const [loop, setLoop] = useState(false);
+  //const [loop, setLoop] = useState(false);
 
   if(controllerNodes.length >= 2) {console.warn(" 2 CONTROLLERS DETECTED")}
 
@@ -229,7 +230,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
                 const original = window.setup
                 window.setup = () => { 
                   original(); 
-                  if(${!loop}) {
+                  if(${!data.loop}) {
                     noLoop();
                   }
                 }
@@ -270,8 +271,8 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
   }
 
   const handleLoopToggle = () => {
-    const toggledLoop = !loop;
-    setLoop(toggledLoop);
+    const toggledLoop = !data.loop;
+    updateNodeData(data.id, {loop: toggledLoop})
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id)as HTMLIFrameElement;
     if (sandbox && elem && elem.contentWindow) {
@@ -352,7 +353,7 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>
       <div className="w-full node-drag-handle border-b flex flex-row text-sm gap-1">
         <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
-        <Toggle label={"loop"} value={loop} onChange={handleLoopToggle} showValue={false}></Toggle>
+        <Toggle label={"loop"} value={data.loop} onChange={handleLoopToggle} showValue={false}></Toggle>
         <span className='text-gray-300'>|</span>
         <Button onClick={handleImgDownload} className='px-1 text-sm rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'>img</Button>
         <span className='text-gray-300'>|</span>
