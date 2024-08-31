@@ -48,12 +48,7 @@ const MarkdownNode: FC<MarkdownNodeProps> = ({ data }) => {
           tabIndex={0}
           onFocus={handleViewClick}
         >
-          <ReactMarkdown
-            components={{
-              
-              
-            }}
-          >{data.markdown}</ReactMarkdown>
+          <ReactMarkdown>{data.markdown}</ReactMarkdown>
         </div>
       )}
     </div>

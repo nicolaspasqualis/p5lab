@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow } from '@xyflow/react';
 import { Button } from './Button';
-import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor } from '../types/types';
+import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor, LogMethods } from '../types/types';
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
+import { useGlobalConsole } from '../context/GlobalConsoleContext';
 
 export interface SandboxNodeProps {
   data: { 
@@ -144,7 +145,57 @@ function controls(newSBController: SandboxController) {
   return sandboxController;
 }
 
+
+function interceptConsole(console: Console, sandboxId: string, runId: string) {
+  const InternalMessageType: typeof MessageType = {
+    CONSOLE_LOG: "console-log",
+    CODE_EXECUTED: "code-executed",
+    CONTROLLER_REGISTRATION: "controller-registration",
+    CONTROLLER_UPDATE: "controller-update",
+    EVAL: "eval",
+  }
+
+  const methodsToIntercept: (keyof Console)[] = ['log', 'info', 'warn', 'debug', 'error']
+
+  methodsToIntercept.forEach(method => {
+    console[method] = (...args) => {
+      window.parent.postMessage({
+        type: InternalMessageType.CONSOLE_LOG, 
+        sandboxId, 
+        runId,
+        method,
+        content: args
+      }, '*');
+    }
+  })
+
+  window.addEventListener("error", (event) => {
+    event.preventDefault();
+  
+    window.parent.postMessage({
+      type: InternalMessageType.CONSOLE_LOG, 
+      sandboxId, 
+      runId,
+      method: 'unhandled_error',
+      content: [event.message],
+    }, '*');
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    event.preventDefault();
+  
+    window.parent.postMessage({
+      type: InternalMessageType.CONSOLE_LOG, 
+      sandboxId, 
+      runId,
+      method: 'unhandled_error',
+      content: [event.reason],
+    }, '*');
+  });
+} 
+
 const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
+  const { addLog } = useGlobalConsole();
   const { updateNodeData } = useReactFlow();
 
   const codeConnections = useHandleConnections({  type: 'target', id: "code" });
@@ -186,11 +237,10 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
           <head>
             <script defer src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
             <script defer>
-              const console = {
-                log: function(...args) {
-                    window.parent.postMessage({type: '${MessageType.CONSOLE_LOG}', sandboxId: "${data.id}", runId: "${runId}", content: args}, '*');
-                }
-              };
+              (${interceptConsole.toString()})(window.console, "${data.id}", "${runId}")
+            </script>
+            <script defer>
+              
               window._sandbox_internals = {
                 id: "${data.id}",
                 runId: "${runId}",
@@ -331,13 +381,13 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
       }
 
       if (event.data.type === MessageType.CONSOLE_LOG) {
-        console.log(`Sandbox ${event.data.sandboxId}:`, ...event.data.content);
-        return
+        addLog({sourceId: event.data.sandboxId,method: event.data.method, data: [...event.data.content]});
+        return;
       }
 
       if(event.data.type === MessageType.CONTROLLER_REGISTRATION) {
-        console.log(`Sandbox ${event.data.sandboxId}:`, event.data.type);
         handleControllerRegistration(event.data.content);
+        return;
       }
     };
 

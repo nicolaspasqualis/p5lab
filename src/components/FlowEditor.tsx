@@ -32,6 +32,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import './../react-flow.css';
 import MarkdownNode from './MarkdownNode';
+import { GlobalConsole } from './GlobalConsole';
 
 const nodeTypes: NodeTypes = {
   codeEditor: CodeEditorNode,
@@ -360,6 +361,7 @@ const FlowEditor: React.FC = () => {
           <NodeInspector/>
           <ViewportLogger/>
         </>}
+        <GlobalConsole/>
       </ReactFlow>
     </div>
   );

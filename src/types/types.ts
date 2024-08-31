@@ -20,8 +20,15 @@ export interface ControlDescriptor {
   options?: string[];
 }
 
-
 export interface ControlUpdateMessage {
   source: string,
   value: number;
 }
+
+export interface LogEntry {
+  sourceId: string;
+  method: string;
+  data: any[];
+}
+
+export type LogMethods = 'log' | 'info' | 'warn' | 'debug' | 'error' | 'unhandled_error'

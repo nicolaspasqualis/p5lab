@@ -8,5 +8,5 @@ export default function ViewportLogger() {
       )}, zoom: ${s.transform[2].toFixed(2)}`,
   );
 
-  return <Panel position="top-right"><div className='react-flow__devtools-viewportinfo'>{viewport}</div></Panel>;
+  return <Panel position="bottom-left"><div className='react-flow__devtools-viewportinfo ml-8 mb-1'>{viewport}</div></Panel>;
 }
