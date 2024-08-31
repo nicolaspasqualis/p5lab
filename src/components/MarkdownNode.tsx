@@ -1,17 +1,26 @@
 import React, { useState, FC, ChangeEvent, MouseEvent, FocusEvent } from 'react';
-import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react';
+import { Handle, Position, NodeResizer, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import ReactMarkdown from 'react-markdown';
+import { Button } from './Button';
 
-interface MarkdownNodeProps {
-  data: {
+export type MarkdownNodeProps = Node <
+  {
     id: string;
     markdown: string;
-  };
-}
+  }
+>;
 
-const MarkdownNode: FC<MarkdownNodeProps> = ({ data }) => {
+const MarkdownNode: FC<NodeProps<MarkdownNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const { updateNodeData } = useReactFlow();
+  const { updateNodeData, setCenter } = useReactFlow();
+
+  const handleCenterOnNode = () => {
+    setCenter(
+      positionAbsoluteX + (width || 0) * 0.5, 
+      positionAbsoluteY + (height || 0) * 0.5, 
+      { zoom: 1, duration:500 }
+    )
+  }
 
   const handleContentChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     updateNodeData(data.id, {markdown: event.target.value})
@@ -30,7 +39,12 @@ const MarkdownNode: FC<MarkdownNodeProps> = ({ data }) => {
       <NodeResizer />
       <Handle type="source" id="sandbox" position={Position.Right} className="top-3"isConnectable={false}/>
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
-        <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
+        
+        
+        <span className='flex-grow flex items-center'> 
+        <Button onClick={handleCenterOnNode}>○</Button>
+          <span className=" text-xs">{data.id}</span>
+          </span>
       </div>
     <div className="w-full h-full text-lg p-4 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500">
       {isEditing ? (

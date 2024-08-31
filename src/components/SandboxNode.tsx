@@ -1,19 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow } from '@xyflow/react';
+import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, XYPosition, NodeProps, Node } from '@xyflow/react';
 import { Button } from './Button';
 import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor, LogMethods } from '../types/types';
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
+import { CircleIcon } from '@radix-ui/react-icons';
 
-export interface SandboxNodeProps {
-  data: { 
+export type SandboxNodeProps = Node <
+  { 
     id: string;
     loop: boolean;
     onControlUpdate: (key: string, value: number) => void;
     onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
-  };
-}
+  }
+>;
 
 declare global {
   interface Window {
@@ -194,9 +195,9 @@ function interceptConsole(console: Console, sandboxId: string, runId: string) {
   });
 } 
 
-const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
+const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
   const { addLog } = useGlobalConsole();
-  const { updateNodeData } = useReactFlow();
+  const { updateNodeData, setCenter} = useReactFlow();
 
   const codeConnections = useHandleConnections({  type: 'target', id: "code" });
   const codeNodes = useNodesData(codeConnections.map((connection) => connection.source));
@@ -300,6 +301,14 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
 
   const runCodeDebounced = useDebouncedCallback(runCode, 1000);
 
+  const handleCenterOnNode = () => {
+    setCenter(
+      positionAbsoluteX + (width || 0) * 0.5, 
+      positionAbsoluteY + (height || 0) * 0.5, 
+      { zoom: 1, duration:500 }
+    )
+  }
+
   const handleCodeExecuted = () => {
     console.log(`${data.id}: EXECUTED`);
     const elem = document.getElementById(data.id)as HTMLIFrameElement;
@@ -401,8 +410,12 @@ const SandboxNode: React.FC<SandboxNodeProps> = ({ data }) => {
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
       <Handle type="target" id="code" position={Position.Left} isConnectable={false}/>
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>
-      <div className="w-full node-drag-handle border-b flex flex-row text-sm gap-1">
-        <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
+      <div className="w-full node-drag-handle border-b flex flex-row text-sm gap-1 p-0">
+        
+        <span className='flex-grow flex items-center'> 
+          <Button onClick={handleCenterOnNode}>○</Button>
+          <span className=" text-xs">{data.id}</span>
+        </span>
         <Toggle label={"loop"} value={data.loop} onChange={handleLoopToggle} showValue={false}></Toggle>
         <span className='text-gray-300'>|</span>
         <Button onClick={handleImgDownload} className='px-1 text-sm rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'>img</Button>

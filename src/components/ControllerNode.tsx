@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections } from '@xyflow/react';
+import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections, Node, NodeProps } from '@xyflow/react';
 import { Button } from './controls/Button';
 import { Button as UIButton } from './Button';
 import { ControlDescriptor, ControllerDescriptor } from '../types/types';
@@ -10,15 +10,16 @@ import { Select } from './controls/Select';
 import { TextControl } from './controls/TextControl';
 
 
-interface ControllerNodeProps {
-  data: {
+
+type ControllerNodeProps = Node <
+  {
     id: string;
     controller: ControllerDescriptor;
-  };
-}
+  }
+>;
 
-const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
-  const { updateNodeData } = useReactFlow();
+const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
+  const { updateNodeData, setCenter } = useReactFlow();
   const connections = useHandleConnections({ type: 'source', id: "sandbox" });
   // ? ↓ unnecessary node-data state?
   const nodesData = useNodesData(connections.map((connection) => connection.target));
@@ -34,6 +35,13 @@ const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
    */
 
 
+  const handleCenterOnNode = () => {
+    setCenter(
+      positionAbsoluteX + (width || 0) * 0.5, 
+      positionAbsoluteY + (height || 0) * 0.5, 
+      { zoom: 1, duration:500 }
+    )
+  }
 
   const handleControlUpdate = (key: string, value: number | string | boolean) => {
     console.log("controller triggering update:", key, value)
@@ -111,7 +119,11 @@ const ControllerNode: React.FC<ControllerNodeProps> = ({ data }) => {
       <NodeResizer minWidth={160}/>
       <Handle type="source" id="sandbox" position={Position.Top} className='left-3' isConnectable={false} />
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
-        <span className='flex-grow mx-1'> <span className=" text-xs">{data.id}</span></span>
+        
+        <span className='flex-grow flex items-center'>  
+          <UIButton onClick={handleCenterOnNode}>○</UIButton>
+          <span className=" text-xs">{data.id}</span>
+        </span>
         <UIButton onClick={() => console.warn("not implemented")}>↺</UIButton>
       </div>
       <div className='m-2'>
