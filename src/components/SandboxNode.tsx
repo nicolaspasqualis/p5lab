@@ -373,7 +373,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
   useEffect(() => {
     runCodeDebounced();
-  }, [code, data]);
+  }, [code]);
 
   
   useEffect(()=>{
@@ -406,7 +406,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   }, )
   
   return (
-    <div className="bg-white border w-full h-full flex flex-col">
+    <div className="bg-white w-full h-full flex flex-col">
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
       <Handle type="target" id="code" position={Position.Left} isConnectable={false}/>
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>

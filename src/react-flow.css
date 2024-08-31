@@ -1,3 +1,12 @@
+.react-flow__resize-control {
+  --xy-resize-background-color: #e5e7eb;
+}
+.react-flow__resize-control.handle {
+  border: none;
+  background-color: transparent;
+}
+
+
 .react-flow__devtools {
     --border-radius: 4px;
     --highlight-color: rgba(238, 58, 115, 1);

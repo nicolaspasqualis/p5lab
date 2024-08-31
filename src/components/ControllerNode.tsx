@@ -115,7 +115,7 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
   };
 
   return (
-    <div className="bg-white border w-full h-full">
+    <div className="bg-white w-full h-full">
       <NodeResizer minWidth={160}/>
       <Handle type="source" id="sandbox" position={Position.Top} className='left-3' isConnectable={false} />
       <div className="w-full node-drag-handle border-b flex flex-row text-sm">
