@@ -7,8 +7,8 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
 import { CircleIcon } from '@radix-ui/react-icons';
 
-export type SandboxNodeProps = Node <
-  { 
+export type SandboxNodeProps = Node<
+  {
     id: string;
     loop: boolean;
     onControlUpdate: (key: string, value: number) => void;
@@ -43,7 +43,7 @@ const MessageType = {
 // necessary dependencies as declared in ~global~.
 // This function is injected into the iframe sandbox by converting it
 // to string (controls.toString()) and then evaluated as a <script/>
-function initScript () {
+function initScript() {
   const InternalMessageType: typeof MessageType = {
     CONSOLE_LOG: "console-log",
     CODE_EXECUTED: "code-executed",
@@ -52,7 +52,7 @@ function initScript () {
     EVAL: "eval",
   }
 
-  window.addEventListener('message', function(event) {
+  window.addEventListener('message', function (event) {
     if (event.data.type === InternalMessageType.EVAL) {
       eval(event.data.expression);
       return;
@@ -68,13 +68,23 @@ type SandboxControl = {
   step?: number,
   options?: string[],
   onChange?: (value: ControlValue) => void,
+  onTrigger?: () => void,
 }
 
 type SandboxController = {
   [key: string]: SandboxControl,
 }
 
-function controls(newSBController: SandboxController) {
+type SandboxControlRelaxed = Omit<SandboxControl, 'type'> & {
+  type?: ControlType;
+};
+
+type SandboxControllerRelaxed = {
+  [key: string]: SandboxControlRelaxed,
+}
+
+
+function controls(newSBController: SandboxControllerRelaxed) {
   const InternalMessageType: typeof MessageType = {
     CONSOLE_LOG: "console-log",
     CODE_EXECUTED: "code-executed",
@@ -83,10 +93,50 @@ function controls(newSBController: SandboxController) {
     EVAL: "eval",
   }
 
+
+  function matchToInputType(control: SandboxControlRelaxed): ControlType {
+    if (control.type) return control.type;
+
+    if (typeof control.value === 'string') {
+      if (/^#[0-9A-Fa-f]{3,6}$/.test(control.value)) {
+        return 'color';
+      }
+      if (control.options && control.options.includes(control.value)) {
+        return 'select';
+      }
+      return 'text';
+    }
+
+    if (typeof control.value === 'boolean') {
+      return 'checkbox';
+    }
+
+    if (typeof control.value === 'number') {
+      if (control.min !== undefined && control.max !== undefined) {
+        return 'range';
+      }
+      /** TODO
+       * 
+       */
+      //return 'number';
+    }
+
+    if (control.onTrigger) {
+      return 'button';
+    }
+
+    throw new Error("Unable to determine control type");
+  }
+
   /**
    * should set current values from running controller state
    */
-  const sandboxController: SandboxController = {...newSBController};
+  const sandboxController: SandboxController = Object.fromEntries(
+    Object.entries(newSBController).map(([key, control]) => [key, {
+      ...control,
+      type: matchToInputType(control),
+    }]
+    ));
 
   const registeredController: ControllerDescriptor = Object.fromEntries(
     Object.entries(sandboxController).map(
@@ -111,36 +161,40 @@ function controls(newSBController: SandboxController) {
     registeredController[key].currentValue = currentValue;
   })
 
-  function handleControllerUpdate (update: ControlUpdateMessage) {
-    const {source, value} = update;
+  function handleControllerUpdate(update: ControlUpdateMessage) {
+    const { source, value } = update;
     const control = sandboxController[source];
 
     if (!control) { return; }
 
+    // update value ref
     control.value = value;
-    if (control.onChange) {
-      control.onChange(value);
+    
+    if (control.type === 'button') {
+      control.onTrigger?.();
+    } else {
+      control.onChange?.(value);
     }
 
     window._sandbox_internals.draw();
   }
 
-  window.addEventListener('message', function(event) {
+  window.addEventListener('message', function (event) {
     console.log('message:', event.data);
 
     if (event.data.type === InternalMessageType.CONTROLLER_UPDATE) {
-        handleControllerUpdate(event.data as ControlUpdateMessage);
-        return;
+      handleControllerUpdate(event.data as ControlUpdateMessage);
+      return;
     }
   });
-  
-  
+
+
 
   window.parent.postMessage({
-    type: InternalMessageType.CONTROLLER_REGISTRATION, 
-    sandboxId: window._sandbox_internals.id, 
+    type: InternalMessageType.CONTROLLER_REGISTRATION,
+    sandboxId: window._sandbox_internals.id,
     runId: window._sandbox_internals.runId,
-    content: {...registeredController}
+    content: { ...registeredController }
   }, '*');
 
   return sandboxController;
@@ -161,8 +215,8 @@ function interceptConsole(console: Console, sandboxId: string, runId: string) {
   methodsToIntercept.forEach(method => {
     console[method] = (...args) => {
       window.parent.postMessage({
-        type: InternalMessageType.CONSOLE_LOG, 
-        sandboxId, 
+        type: InternalMessageType.CONSOLE_LOG,
+        sandboxId,
         runId,
         method,
         content: args
@@ -172,10 +226,10 @@ function interceptConsole(console: Console, sandboxId: string, runId: string) {
 
   window.addEventListener("error", (event) => {
     event.preventDefault();
-  
+
     window.parent.postMessage({
-      type: InternalMessageType.CONSOLE_LOG, 
-      sandboxId, 
+      type: InternalMessageType.CONSOLE_LOG,
+      sandboxId,
       runId,
       method: 'unhandled_error',
       content: [event.message],
@@ -184,32 +238,32 @@ function interceptConsole(console: Console, sandboxId: string, runId: string) {
 
   window.addEventListener("unhandledrejection", (event) => {
     event.preventDefault();
-  
+
     window.parent.postMessage({
-      type: InternalMessageType.CONSOLE_LOG, 
-      sandboxId, 
+      type: InternalMessageType.CONSOLE_LOG,
+      sandboxId,
       runId,
       method: 'unhandled_error',
       content: [event.reason],
     }, '*');
   });
-} 
+}
 
 const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
   const { addLog } = useGlobalConsole();
-  const { updateNodeData, setCenter} = useReactFlow();
+  const { updateNodeData, setCenter } = useReactFlow();
 
-  const codeConnections = useHandleConnections({  type: 'target', id: "code" });
+  const codeConnections = useHandleConnections({ type: 'target', id: "code" });
   const codeNodes = useNodesData(codeConnections.map((connection) => connection.source));
   const code = codeNodes.filter((node: any) => node.type === "codeEditor")[0]?.data.code;
 
-  const controllerConnections = useHandleConnections({  type: 'target', id: "controller" });
+  const controllerConnections = useHandleConnections({ type: 'target', id: "controller" });
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
   const controllerNode = controllerNodes.filter((node: any) => node.type === "controller")[0];
 
   //const [loop, setLoop] = useState(false);
 
-  if(controllerNodes.length >= 2) {console.warn(" 2 CONTROLLERS DETECTED")}
+  if (controllerNodes.length >= 2) { console.warn(" 2 CONTROLLERS DETECTED") }
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -217,17 +271,17 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
   const getRunId = () => String(runNumber.current);
 
-  
+
 
   const runCode = () => {
     runNumber.current++;
     const sandbox = iframeRef.current as HTMLIFrameElement;
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
     console.log("CONTROLLER STATE", JSON.stringify(controllerNode?.data.controller as ControllerDescriptor || {}))
 
     // TODO add encoding step to ensure safe javascript output (e.g backticks)
     // maybe use a function that can convert an object to literal format/representation
-    const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as ControllerDescriptor || {})); 
+    const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as ControllerDescriptor || {}));
 
     if (sandbox && elem) {
       const runId = getRunId();
@@ -303,67 +357,67 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
   const handleCenterOnNode = () => {
     setCenter(
-      positionAbsoluteX + (width || 0) * 0.5, 
-      positionAbsoluteY + (height || 0) * 0.5, 
-      { zoom: 1, duration:500 }
+      positionAbsoluteX + (width || 0) * 0.5,
+      positionAbsoluteY + (height || 0) * 0.5,
+      { zoom: 1, duration: 500 }
     )
   }
 
   const handleCodeExecuted = () => {
     console.log(`${data.id}: EXECUTED`);
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
-    if(elem){
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
+    if (elem) {
       elem.style.display = 'block';
     }
-  } 
+  }
   const handleResizingStart = () => {
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
-    if(elem){
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
+    if (elem) {
       elem.style.pointerEvents = 'none';
     }
   }
   const handleResizingEnd = () => {
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
-    if(elem){
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
+    if (elem) {
       elem.style.pointerEvents = 'auto';
     }
   }
 
   const handleLoopToggle = () => {
     const toggledLoop = !data.loop;
-    updateNodeData(data.id, {loop: toggledLoop})
+    updateNodeData(data.id, { loop: toggledLoop })
     const sandbox = iframeRef.current as HTMLIFrameElement;
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
     if (sandbox && elem && elem.contentWindow) {
-      elem.contentWindow.postMessage({type: MessageType.EVAL, expression: `window._sandbox_internals.loop(${toggledLoop})`}, '*');
+      elem.contentWindow.postMessage({ type: MessageType.EVAL, expression: `window._sandbox_internals.loop(${toggledLoop})` }, '*');
     }
   }
 
   const handleImgDownload = () => {
     const sandbox = iframeRef.current as HTMLIFrameElement;
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
     if (sandbox && elem && elem.contentWindow) {
-      elem.contentWindow.postMessage({type: MessageType.EVAL, expression: `saveCanvas('${data.id}')`}, '*');
+      elem.contentWindow.postMessage({ type: MessageType.EVAL, expression: `saveCanvas('${data.id}')` }, '*');
     }
   }
 
   const handleControlUpdate = (key: string, value: number) => {
     const sandbox = iframeRef.current as HTMLIFrameElement;
-    const elem = document.getElementById(data.id)as HTMLIFrameElement;
-    if (sandbox && elem && elem.contentWindow){
-      elem.contentWindow.postMessage({type: MessageType.CONTROLLER_UPDATE, source: key, value: value}, '*');
+    const elem = document.getElementById(data.id) as HTMLIFrameElement;
+    if (sandbox && elem && elem.contentWindow) {
+      elem.contentWindow.postMessage({ type: MessageType.CONTROLLER_UPDATE, source: key, value: value }, '*');
     }
   }
 
   const handleControllerRegistration = (newController: ControllerDescriptor) => {
-    if(!data.onControlUpdate) {
-      updateNodeData(data.id, {onControlUpdate: handleControlUpdate})
+    if (!data.onControlUpdate) {
+      updateNodeData(data.id, { onControlUpdate: handleControlUpdate })
     }
 
-    if(controllerNode) {
+    if (controllerNode) {
       console.log("updating controller", controllerNode.data.id, newController)
-      updateNodeData(controllerNode.data.id as string, { 
-        controller: newController 
+      updateNodeData(controllerNode.data.id as string, {
+        controller: newController
       })
     } else {
       console.log("adding controller", newController)
@@ -375,11 +429,11 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     runCodeDebounced();
   }, [code]);
 
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if(event.data.sandboxId !== data.id) { return; }
-      if(event.data.runId !== getRunId()) {
+      if (event.data.sandboxId !== data.id) { return; }
+      if (event.data.runId !== getRunId()) {
         console.log("Stale message | ", "expected: ", getRunId(), "received: ", event.data.runId)
         return;
       }
@@ -390,11 +444,11 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
       }
 
       if (event.data.type === MessageType.CONSOLE_LOG) {
-        addLog({sourceId: event.data.sandboxId,method: event.data.method, data: [...event.data.content]});
+        addLog({ sourceId: event.data.sandboxId, method: event.data.method, data: [...event.data.content] });
         return;
       }
 
-      if(event.data.type === MessageType.CONTROLLER_REGISTRATION) {
+      if (event.data.type === MessageType.CONTROLLER_REGISTRATION) {
         handleControllerRegistration(event.data.content);
         return;
       }
@@ -403,16 +457,16 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     window.addEventListener('message', handleMessage);
 
     return () => window.removeEventListener('message', handleMessage);
-  }, )
-  
+  },)
+
   return (
     <div className="bg-white w-full h-full flex flex-col">
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
-      <Handle type="target" id="code" position={Position.Left} isConnectable={false}/>
-      <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false}/>
+      <Handle type="target" id="code" position={Position.Left} isConnectable={false} />
+      <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false} />
       <div className="w-full node-drag-handle border-b flex flex-row text-sm gap-1 p-0">
-        
-        <span className='flex-grow flex items-center'> 
+
+        <span className='flex-grow flex items-center'>
           <Button onClick={handleCenterOnNode}>○</Button>
           <span className=" text-xs">{data.id}</span>
         </span>
@@ -428,7 +482,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
         title={`Sandbox ${data.id}`}
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups 
          allow-scripts allow-top-navigation-by-user-activation allow-downloads"
-        
+
         className={'h-full w-full object-contain block p-1'}
       />
     </div>

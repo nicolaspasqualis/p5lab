@@ -3,30 +3,19 @@ export default (
 `let insideRadius = 100;
 let outsideRadius = 150;
 
+
 const {points, button, someText} = p5lab.controls({
-  points: {
-    type: "range", min: 2, max: 12, step: 1, 
-    value: 3,
+  points: { value: 3, min: 2, max: 12 },
+  color: { value: "#ff00ff" },
+  checkbox: { value: true },
+  someText: { value: "#noiiice!!"},
+  color2: { value: "color", 
+    options: ["color", "hkghjb", "black"],
+    onChange: (value) => alert(value)
   },
-  morePointz: {
-    type: "range", min: 2, max: 12, step: 1, 
-    value: 3,
-  },
-  color: {
-    type: "color", min: 2, max: 12, step: 1, 
-    value: "#ff00ff",
-  },
-  checkbox: {
-    type: "checkbox", initialValue: false,
-  },
-  color2: {
-    type: "select", options: ["color", "white", "black"], 
-    value: "color",
-  },
-  button: {
-    type: 'button', onChange: () => { console.log("BUTTTTONNNNEE") },
-  },
-  someText: { type: 'text', value: "hi!!"}
+  superImportantButton: { 
+    onTrigger: () => window.alert("test") 
+  }
 })
 
 function setup() {
