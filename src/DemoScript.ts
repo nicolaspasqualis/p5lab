@@ -13,7 +13,7 @@ const {points, button, someText} = p5lab.controls({
     options: ["color", "hkghjb", "black"],
     onChange: (value) => alert(value)
   },
-  superImportantButton: { 
+  alert: { 
     onTrigger: () => window.alert("test") 
   }
 })

@@ -5,7 +5,6 @@ import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor, 
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
-import { CircleIcon } from '@radix-ui/react-icons';
 
 export type SandboxNodeProps = Node<
   {
@@ -115,10 +114,8 @@ function controls(newSBController: SandboxControllerRelaxed) {
       if (control.min !== undefined && control.max !== undefined) {
         return 'range';
       }
-      /** TODO
-       * 
-       */
-      //return 'number';
+
+      /** TODO */    // return 'number';
     }
 
     if (control.onTrigger) {
@@ -187,8 +184,6 @@ function controls(newSBController: SandboxControllerRelaxed) {
       return;
     }
   });
-
-
 
   window.parent.postMessage({
     type: InternalMessageType.CONTROLLER_REGISTRATION,
