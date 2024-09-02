@@ -170,7 +170,7 @@ const FlowEditor: React.FC = () => {
   const [projectName, setProjectName] = useState('untitled');
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { setViewport, getNode, getNodes, getEdges, screenToFlowPosition, fitView } = useReactFlow();
+  const { setViewport, getNode, getNodes, getEdges, screenToFlowPosition } = useReactFlow();
   const [showInfo, setShowInfo] = useState(true);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<Node, Edge>>();
   const nodeCount = useRef<number>(0);
