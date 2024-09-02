@@ -177,7 +177,7 @@ const FlowEditor: React.FC = () => {
 
   useEffect(() => {
     const path = window.location.pathname;
-    if (path === '#welcome' || path === '/p5lab#welcome') {
+    if (path === '/p5lab/#welcome' || path === '/p5lab#welcome') {
       loadState(welcomeState);
     }
   }, []);
