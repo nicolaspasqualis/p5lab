@@ -325,6 +325,7 @@ const FlowEditor: React.FC = () => {
         panOnDrag={[1,2]}
         selectionMode={SelectionMode.Partial}
         panOnScrollSpeed={1.25}
+        minZoom={0.2}
       >
         <Panel position={'top-left'} className='m-2'>
           <div className='flex flex-row gap-1'>

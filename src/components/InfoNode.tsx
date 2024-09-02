@@ -46,7 +46,7 @@ const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, posit
           <span className=" text-xs">{data.id}</span>
           </span>
       </div>
-    <div className="w-full h-full text-lg p-4 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500">
+    <div className="w-full h-full cursor-text text-lg p-4 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500">
       {isEditing ? (
         <textarea
           className="w-full flex h-full p-0 m-0 border-none outline-none resize-none"
