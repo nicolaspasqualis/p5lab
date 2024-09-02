@@ -176,8 +176,8 @@ const FlowEditor: React.FC = () => {
   const nodeCount = useRef<number>(0);
 
   useEffect(() => {
-    const path = window.location.pathname;
-    if (path === '/p5lab/#welcome' || path === '/p5lab#welcome') {
+    const hash = window.location.hash;
+    if (hash === '#welcome') {
       loadState(welcomeState);
     }
   }, []);
