@@ -274,8 +274,9 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     console.log("CONTROLLER STATE", JSON.stringify(controllerNode?.data.controller as ControllerDescriptor || {}))
 
-    // TODO add encoding step to ensure safe javascript output (e.g backticks)
-    // maybe use a function that can convert an object to literal format/representation
+    // TODO add encoding step to ensure safe javascript output (e.g backticks?)
+    // maybe use a function that can convert an object to literal format/representation?
+    // not sure its required, since communication is done with plain json-like objects for now
     const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as ControllerDescriptor || {}));
 
     if (sandbox && elem) {
@@ -285,7 +286,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
       const src = `
         <html>
           <head>
-            <script defer src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+            <script defer src="./libs/p5.min.js"></script>
             <script defer>
               (${interceptConsole.toString()})(window.console, "${data.id}", "${runId}")
             </script>

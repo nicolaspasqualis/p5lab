@@ -6,7 +6,8 @@ import { Button } from './Button';
 import NodeInspector from './NodeInspector';
 import ViewportLogger from './ViewportLogger';
 import { ControllerDescriptor } from '../types/types';
-import DemoScript from '../DemoScript';
+import defaultScript from '../defaultScript';
+
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -33,6 +34,7 @@ import '@xyflow/react/dist/style.css';
 import './../react-flow.css';
 import MarkdownNode from './MarkdownNode';
 import { GlobalConsole } from './GlobalConsole';
+import welcomeState from './../welcome.json';
 
 const nodeTypes: NodeTypes = {
   codeEditor: CodeEditorNode,
@@ -99,7 +101,7 @@ const CreateEditorNode = (id:string, onAddSandbox: (editorId: string) => void, p
     type: 'codeEditor',
     data: { 
       id,
-      code: DemoScript, 
+      code: defaultScript, 
       onAddSandbox, 
     },
     position,
@@ -172,6 +174,13 @@ const FlowEditor: React.FC = () => {
   const [showInfo, setShowInfo] = useState(true);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<Node, Edge>>();
   const nodeCount = useRef<number>(0);
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/welcome' || path === '/p5lab/welcome') {
+      loadState(welcomeState);
+    }
+  }, []);
   
   useEffect(() => {
     document.title = projectName + ' — p5lab';

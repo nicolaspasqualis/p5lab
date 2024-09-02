@@ -1,20 +1,18 @@
-// @ts-nocheck
-export default (
-`let insideRadius = 100;
+//@ts-nocheck
+export default `let insideRadius = 100;
 let outsideRadius = 150;
-
 
 const {points, button, someText} = p5lab.controls({
   points: { value: 3, min: 2, max: 12 },
   color: { value: "#ff00ff" },
   checkbox: { value: true },
-  someText: { value: "#noiiice!!"},
+  someText: { value: "type here"},
   color2: { value: "color", 
-    options: ["color", "hkghjb", "black"],
+    options: ["color", "white", "black"],
     onChange: (value) => alert(value)
   },
   alert: { 
-    onTrigger: () => window.alert("test") 
+    onTrigger: () => window.alert("triggered") 
   }
 })
 
@@ -59,5 +57,5 @@ function draw() {
     angle += angleStep;
   }
   endShape();
-}`
-)
+}
+`
