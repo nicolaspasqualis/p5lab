@@ -244,7 +244,7 @@ function interceptConsole(console: Console, sandboxId: string, runId: string) {
   });
 }
 
-const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
+const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height, dragging }) => {
   const { addLog } = useGlobalConsole();
   const { updateNodeData, setCenter } = useReactFlow();
 
@@ -285,6 +285,15 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
       const src = `
         <html>
           <head>
+            <style>
+              html, body {
+                margin: 0;
+                padding: 0;
+              }
+              canvas {
+                display: block;
+              }
+            </style>
             <script defer src="./libs/p5.min.js"></script>
             <script defer>
               (${interceptConsole.toString()})(window.console, "${data.id}", "${runId}")
@@ -459,7 +468,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
       <Handle type="target" id="code" position={Position.Left} isConnectable={false} />
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false} />
-      <div className="w-full node-drag-handle border-b flex flex-row text-sm gap-1 p-0">
+      <div className="node-drag-handle border-b flex flex-row text-sm gap-1 p-0">
 
         <span className='flex-grow flex items-center'>
           <Button onClick={handleCenterOnNode}>○</Button>
@@ -478,7 +487,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups 
          allow-scripts allow-top-navigation-by-user-activation allow-downloads"
 
-        className={'h-full w-full object-contain block p-1'}
+        className={`flex-grow min-h-0 min-w-0 block ${dragging ? "pointer-events-none" : "pointer-events-auto"}`}
       />
     </div>
   );
