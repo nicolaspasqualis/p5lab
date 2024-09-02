@@ -7,7 +7,7 @@ add basic p5 features to sandbox ui
     toggle friendly error system 
 
 nodes & ocnnections!
-    console.log with serialization
+    safe js serialization
     multiple ports/nodes/controllers support
     metrics? avg, framerate, time, deltatime, cpu usage?
     user-definable inputs/outputs? js api? p5lab.input("some input", { type: "control"...})
@@ -16,16 +16,17 @@ nodes & ocnnections!
 
 copy/paste/duplicate
 
-better p5lab api for use in sketch code
-
 import/export as new tabs
 
 make mouse events only captured by the selected node?
+
+batch/apply same operation on multiple nodes. eg. loop, focus, delete, 
 
 style ui
 
 debounce control changes
 
+!!! postMessage origin definitions
 ??? force cross-origin treatment so each runs in a separate thread?
 !!! verify sandbox isolation from parent context
 !!! santize sandbox messages
@@ -38,5 +39,5 @@ autocomplete
 p5 reference
 
 maybe
-    pin to screen option?
+    node pin to screen option?
     support generic html/js sandbox instead of p5 template?

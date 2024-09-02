@@ -32,15 +32,15 @@ import {
 
 import '@xyflow/react/dist/style.css';
 import './../react-flow.css';
-import MarkdownNode from './MarkdownNode';
+import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
 import welcomeState from './../welcome.json';
 
 const nodeTypes: NodeTypes = {
-  codeEditor: CodeEditorNode,
+  editor: CodeEditorNode,
   sandbox: SandboxNode,
   controller: ControllerNode,
-  markdown: MarkdownNode,
+  info: InfoNode,
 };
 
 type StoredState = {
@@ -57,8 +57,8 @@ const defaultEditorHeight = 920;
 const defaultSandboxWidth = 360;
 const defaultSandboxHeight = 360;
 const defaultControllerWidth = 180;
-const defaultMarkdownWidth = 480;
-const defaultMarkdownHeight = 920;
+const defaultInfoWidth = 480;
+const defaultInfoHeight = 180;
 
 const CreateSandboxNode = (
   id: string, onAddController: (sandboxId: string, controller: ControllerDescriptor) => void, 
@@ -98,7 +98,7 @@ const CreateEditorNode = (id:string, onAddSandbox: (editorId: string) => void, p
   const node: Node = {
     ...BaseNodeAttributes,
     id,
-    type: 'codeEditor',
+    type: 'editor',
     data: { 
       id,
       code: defaultScript, 
@@ -112,18 +112,18 @@ const CreateEditorNode = (id:string, onAddSandbox: (editorId: string) => void, p
 }
 
 
-const CreateMarkdownNode = (id:string, position: XYPosition) => {
+const CreateInfoNode = (id:string, position: XYPosition) => {
   const node: Node = {
     ...BaseNodeAttributes,
     id,
-    type: 'markdown',
+    type: 'info',
     data: { 
       id,
       markdown: "", 
     },
     position,
-    width: defaultMarkdownWidth,
-    height: defaultMarkdownHeight,
+    width: defaultInfoWidth,
+    height: defaultInfoHeight,
   };
   return node;
 }
@@ -170,7 +170,7 @@ const FlowEditor: React.FC = () => {
   const [projectName, setProjectName] = useState('untitled');
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { setViewport, getNode, getNodes, getEdges, screenToFlowPosition } = useReactFlow();
+  const { setViewport, getNode, getNodes, getEdges, screenToFlowPosition, fitView } = useReactFlow();
   const [showInfo, setShowInfo] = useState(true);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<Node, Edge>>();
   const nodeCount = useRef<number>(0);
@@ -240,7 +240,7 @@ const FlowEditor: React.FC = () => {
           ...node,
           data: { 
             ...node.data,
-            ...node.type === "codeEditor" && {onAddSandbox: addSandbox},
+            ...node.type === "editor" && {onAddSandbox: addSandbox},
             ...node.type === "sandbox" && {onAddController: addController},
           }
         })));
@@ -298,10 +298,10 @@ const FlowEditor: React.FC = () => {
   }, [setNodes]);
 
 
-  const addMarkdown = useCallback(() => {
-    const id = generateId('markdown');
+  const addInfo = useCallback(() => {
+    const id = generateId('info');
     const {x, y} = screenToFlowPosition({x: 100, y:100});
-    const newNode: Node = CreateMarkdownNode(id, {x, y});
+    const newNode: Node = CreateInfoNode(id, {x, y});
 
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
@@ -351,9 +351,10 @@ const FlowEditor: React.FC = () => {
               />
             </label>
             <span className='text-gray-300'>|</span>
-            <Button onClick={addEditor}>+ code</Button>
-            <Button onClick={addMarkdown}>+ md</Button>
-            <Button onClick={toggleInfo}>⌗ info</Button> 
+            <Button onClick={addEditor}>○ editor</Button>
+            <Button onClick={addInfo}>○ info</Button>
+            <span className='text-gray-300'>|</span>
+            <Button onClick={toggleInfo}>show metadata</Button> 
           </div>
         </Panel>
         <Controls className='shadow-none'/>

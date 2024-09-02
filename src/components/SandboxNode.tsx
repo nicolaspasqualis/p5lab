@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, XYPosition, NodeProps, Node } from '@xyflow/react';
+import React, { useEffect, useRef } from 'react';
+import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import { Button } from './Button';
-import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor, LogMethods } from '../types/types';
+import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor } from '../types/types';
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
@@ -250,7 +250,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
   const codeConnections = useHandleConnections({ type: 'target', id: "code" });
   const codeNodes = useNodesData(codeConnections.map((connection) => connection.source));
-  const code = codeNodes.filter((node: any) => node.type === "codeEditor")[0]?.data.code;
+  const code = codeNodes.filter((node: any) => node.type === "editor")[0]?.data.code;
 
   const controllerConnections = useHandleConnections({ type: 'target', id: "controller" });
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
@@ -276,7 +276,6 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
     // TODO add encoding step to ensure safe javascript output (e.g backticks?)
     // maybe use a function that can convert an object to literal format/representation?
-    // not sure its required, since communication is done with plain json-like objects for now
     const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as ControllerDescriptor || {}));
 
     if (sandbox && elem) {

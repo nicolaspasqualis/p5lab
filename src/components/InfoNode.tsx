@@ -1,16 +1,16 @@
-import React, { useState, FC, ChangeEvent, MouseEvent, FocusEvent } from 'react';
+import { useState, FC, ChangeEvent } from 'react';
 import { Handle, Position, NodeResizer, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import ReactMarkdown from 'react-markdown';
 import { Button } from './Button';
 
-export type MarkdownNodeProps = Node <
+export type InfoNodeProps = Node <
   {
     id: string;
     markdown: string;
   }
 >;
 
-const MarkdownNode: FC<NodeProps<MarkdownNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
+const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { updateNodeData, setCenter } = useReactFlow();
 
@@ -70,4 +70,4 @@ const MarkdownNode: FC<NodeProps<MarkdownNodeProps>> = ({ data, positionAbsolute
   );
 };
 
-export default MarkdownNode;
+export default InfoNode;

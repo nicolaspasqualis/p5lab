@@ -3,8 +3,6 @@ import { useGlobalConsole } from "../context/GlobalConsoleContext";
 import { LogEntry } from "../types/types";
 import React, { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon, ChevronLeftIcon } from '@radix-ui/react-icons';
-import { Button } from "./Button";
-
 
 interface LogEntryVisualizerProps {
   log: LogEntry;
@@ -29,8 +27,6 @@ const getLogIcon = (method: string) => {
 
 const LogEntryVisualizer: React.FC<LogEntryVisualizerProps> = ({ log }) => {
   const [expanded, setExpanded] = useState(true);
-
-  
 
   const renderValue = (value: any): JSX.Element => {
     if (value === null) return <span className="text-gray-500">null</span>;
