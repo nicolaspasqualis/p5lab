@@ -5,11 +5,12 @@ interface ToggleProps {
   value: boolean,
   showValue?: boolean
   onChange: (value: boolean) => void,
+  className?: string
 }
 
-export const Toggle = ({ label, value, onChange, showValue=true }: ToggleProps) => (
-  <label className="flex flex-row gap-1">
-    <span className="text-sm flex-grow">
+export const Toggle = ({ label, value, onChange, showValue = true, className }: ToggleProps) => (
+  <label className={className || "flex items-center flex-row gap-1 text-sm "}>
+    <span className="flex-grow">
       {label}{showValue && <>: <span className="text-xs text-right text-gray-500 font-mono">{value.toString()}</span></>}
     </span>
     <div className='h-full pt-[2px] pb-[2px] flex flex-col justify-center'>

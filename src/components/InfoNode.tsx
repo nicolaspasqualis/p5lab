@@ -1,14 +1,12 @@
 import { useState, FC, ChangeEvent } from 'react';
-import { Handle, Position, NodeResizer, useReactFlow, NodeProps, Node } from '@xyflow/react';
+import { NodeResizer, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import ReactMarkdown from 'react-markdown';
 import { Button } from './Button';
 
-export type InfoNodeProps = Node <
-  {
-    id: string;
-    markdown: string;
-  }
->;
+export type InfoNodeProps = Node <{
+  id: string;
+  markdown: string;
+}>;
 
 const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -37,14 +35,11 @@ const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, posit
   return (
     <div className="bg-white w-full h-full overflow-y-clip">
       <NodeResizer />
-      <Handle type="source" id="sandbox" position={Position.Right} className="top-3"isConnectable={false}/>
-      <div className="w-full node-drag-handle border-b flex flex-row text-sm">
-        
-        
+      <div className="w-full mx-[1px] mt-[1px] node-drag-handle border-b flex flex-row text-sm">
         <span className='flex-grow flex items-center'> 
-        <Button onClick={handleCenterOnNode}>○</Button>
+          <Button onClick={handleCenterOnNode}>○</Button>
           <span className=" text-xs">{data.id}</span>
-          </span>
+        </span>
       </div>
     <div className="w-full h-full cursor-text text-lg p-4 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500">
       {isEditing ? (

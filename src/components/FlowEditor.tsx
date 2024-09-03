@@ -35,6 +35,7 @@ import './../react-flow.css';
 import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
 import welcomeState from './../welcome.json';
+import { Toggle } from './controls/Toggle';
 
 const nodeTypes: NodeTypes = {
   editor: CodeEditorNode,
@@ -355,7 +356,8 @@ const FlowEditor: React.FC = () => {
             <Button onClick={addEditor}>○ editor</Button>
             <Button onClick={addInfo}>○ info</Button>
             <span className='text-gray-300'>|</span>
-            <Button onClick={toggleInfo}>show metadata</Button> 
+            <Toggle label={"metadata"} value={showInfo} showValue={false} onChange={toggleInfo} className={'px-1 flex items-center flex-row gap-2 text-md rounded bg-white'}></Toggle>
+            {/* <Button onClick={toggleInfo}>show metadata</Button>  */}
           </div>
         </Panel>
         <Controls className='shadow-none'/>

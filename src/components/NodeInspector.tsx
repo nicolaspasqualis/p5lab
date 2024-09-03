@@ -45,16 +45,7 @@ type NodeInfoProps = {
   data: any;
 };
 
-function NodeInfo({
-  id,
-  type,
-  selected,
-  x,
-  y,
-  width,
-  height,
-  data,
-}: NodeInfoProps) {
+function NodeInfo({ id, type, selected, x, y, width, height, data }: NodeInfoProps) {
   if (!width || !height) {
     return null;
   }
@@ -62,8 +53,7 @@ function NodeInfo({
   const[expandData, setExpandData] = useState(false)
 
   return (
-    <div
-      className="react-flow__devtools-nodeinfo"
+    <div className="react-flow__devtools-nodeinfo"
       style={{
         position: 'absolute',
         transform: `translate(${x}px, ${y + height}px)`,
@@ -73,24 +63,18 @@ function NodeInfo({
       <div>id: {id}</div>
       <div>type: {type}</div>
       <div>selected: {selected ? 'true' : 'false'}</div>
-      <div>
-        position: {x.toFixed(1)}, {y.toFixed(1)}
-      </div>
-      <div>
-        dimensions: {width} × {height}
-      </div>
+      <div>position: {x.toFixed(1)}, {y.toFixed(1)}</div>
+      <div>dimensions: {width} × {height}</div>
       <div className='text-wrap nopan'>data: 
-        <span 
-          className='p-1 hover:ring-1 rounded cursor-pointer h-0.5'
-          onClick={()=>{
-            setExpandData(!expandData)
-          }}
-        >
-          {expandData ? '-':'[+]'}
-        </span>
-        
-        {expandData && <pre className="text-wrap">{JSON.stringify(data, null, 2)}</pre>}
-        
+      <span className='p-1 hover:ring-1 rounded cursor-pointer h-0.5'
+        onClick={() => { setExpandData(!expandData) }}
+      >
+        { expandData ? '-':'[+]' }
+      </span>
+      { expandData && <pre className="text-wrap">
+          {JSON.stringify(data, null, 2)}
+        </pre>
+      }
       </div>
     </div>
   );

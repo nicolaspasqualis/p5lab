@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface TextControlProps {
+interface TextareaProps {
   label: string,
   value: string,
   onChange: (value: string) => void;
 }
 
-export const TextControl: React.FC<TextControlProps> = ({ label, value, onChange }) => (
+export const Textarea: React.FC<TextareaProps> = ({ label, value, onChange }) => (
   <label className="flex flex-row gap-3 ">
     <span className="text-sm ">
       {label}

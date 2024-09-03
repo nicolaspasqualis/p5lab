@@ -6,14 +6,12 @@ import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
 
-export type SandboxNodeProps = Node<
-  {
-    id: string;
-    loop: boolean;
-    onControlUpdate: (key: string, value: number) => void;
-    onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
-  }
->;
+export type SandboxNodeProps = Node<{
+  id: string;
+  loop: boolean;
+  onControlUpdate: (key: string, value: number) => void;
+  onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
+}>;
 
 declare global {
   interface Window {
@@ -328,7 +326,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
             }</script>
             <script defer>
               function windowResized() {
-                resizeCanvas(windowWidth, windowHeight)
+                resizeCanvas(Math.round(windowWidth), Math.round(windowHeight))
               }
             </script>
             <script defer>
@@ -468,16 +466,16 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
       <Handle type="target" id="code" position={Position.Left} isConnectable={false} />
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false} />
-      <div className="node-drag-handle border-b flex flex-row text-sm gap-1 p-0">
+      <div className="node-drag-handle mx-[1px] mt-[1px] border-b flex flex-row text-sm gap-1 p-0">
 
         <span className='flex-grow flex items-center'>
           <Button onClick={handleCenterOnNode}>○</Button>
           <span className=" text-xs">{data.id}</span>
         </span>
         <Toggle label={"loop"} value={data.loop} onChange={handleLoopToggle} showValue={false}></Toggle>
-        <span className='text-gray-300'>|</span>
+        <span className='text-gray-300 mt-[1px]'>|</span>
         <Button onClick={handleImgDownload} className='px-1 text-sm rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'>img</Button>
-        <span className='text-gray-300'>|</span>
+        <span className='text-gray-300 mt-[1px]'>|</span>
         <Button onClick={runCode}>↺</Button>
       </div>
       <iframe

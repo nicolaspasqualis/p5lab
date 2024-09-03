@@ -23,30 +23,24 @@ function ChangeInfo({ change }: ChangeInfoProps) {
   return (
     <div>
       <div>{id}</div>
-      <div><span>
-        {type === 'add'
-          ? <>
-            <span>├ + add</span>
-            <pre className='text-wrap'>{JSON.stringify(change.item, null, 2)}</pre>
-          </>
-          : null
-        }
-        {type === 'dimensions'
-          ? <>
-            <span>├ ⇲ dimensions</span>
-             <pre>└── {`${change.dimensions?.width} × ${change.dimensions?.height}`}</pre>
-          </>
-          : null}
-        {type === 'position'
-          ? <>
-            <span>├ position</span>
-             <pre>└── {`${change.position?.x.toFixed(1)}, ${change.position?.y.toFixed(1)}`}</pre>
-          </>
-          : null}
-        {type === 'remove' ? '└ × remove' : null}
-        {type === 'select' ? (change.selected ? '└ ● select' : '└ ○ unselect') : null}
-
-      </span></div>
+      <div>
+        <span>
+        {type === 'add' && <>
+          <span>├ + add</span>
+          <pre className='text-wrap'>{JSON.stringify(change.item, null, 2)}</pre>
+        </>}
+        {type === 'dimensions' && <>
+          <span>├ ⇲ dimensions</span>
+          <pre>└── {`${change.dimensions?.width} × ${change.dimensions?.height}`}</pre>
+        </>}
+        {type === 'position' && <>
+          <span>├ position</span>
+          <pre>└── {`${change.position?.x.toFixed(1)}, ${change.position?.y.toFixed(1)}`}</pre>
+        </>}
+        {type === 'remove' && '└ × remove'}
+        {type === 'select' && (change.selected ? '└ ● select' : '└ ○ unselect')}
+        </span>
+      </div>
     </div>
   );
 }
@@ -75,15 +69,12 @@ export default function ChangeLogger({ limit = 20 }: ChangeLoggerProps) {
 
   return (
     <Panel position="top-left">
-    <div className="react-flow__devtools-changelogger">
-      {changes.length === 0 ? (
-        <>no changes triggered</>
-      ) : (
-        changes.map((change, index) => (
-          <ChangeInfo key={index} change={change} />
-        ))
-      )}
-    </div>
+      <div className="react-flow__devtools-changelogger">
+        {changes.length === 0 
+          ? <>no changes triggered</> 
+          : changes.map((change, index) => <ChangeInfo key={index} change={change} />)
+        }
+      </div>
     </Panel>
   );
 }
