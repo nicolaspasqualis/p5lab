@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import { Button } from './Button';
-import { ControlType, ControlUpdateMessage, ControlValue, ControllerDescriptor } from '../types/types';
+import { ControllerDescriptor } from '../types/types';
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
+import { getIframeSourceTemplate, SandboxMessageType } from '../Sandbox';
 
 export type SandboxNodeProps = Node<{
   id: string;
@@ -13,240 +14,13 @@ export type SandboxNodeProps = Node<{
   onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
 }>;
 
-declare global {
-  interface Window {
-    _sandbox_internals: {
-      id: string;
-      runId: string;
-      controller: ControllerDescriptor;
-      loop: (shouldLoop: boolean) => void;
-      draw: () => void;
-    }
-    control: () => void;
-  }
-}
-
-const MessageType = {
-  CONSOLE_LOG: "console-log",
-  CODE_EXECUTED: "code-executed",
-  CONTROLLER_REGISTRATION: "controller-registration",
-  CONTROLLER_UPDATE: "controller-update",
-  EVAL: "eval",
-}
-
-// This needs to be a function without external dependencies 
-// besides the window context in which it will be run.
-// It expects the window object to be extended with the 
-// necessary dependencies as declared in ~global~.
-// This function is injected into the iframe sandbox by converting it
-// to string (controls.toString()) and then evaluated as a <script/>
-function initScript() {
-  const InternalMessageType: typeof MessageType = {
-    CONSOLE_LOG: "console-log",
-    CODE_EXECUTED: "code-executed",
-    CONTROLLER_REGISTRATION: "controller-registration",
-    CONTROLLER_UPDATE: "controller-update",
-    EVAL: "eval",
-  }
-
-  window.addEventListener('message', function (event) {
-    if (event.data.type === InternalMessageType.EVAL) {
-      eval(event.data.expression);
-      return;
-    }
-  });
-}
-
-type SandboxControl = {
-  value: number | boolean | string,
-  type: ControlType,
-  min?: number,
-  max?: number,
-  step?: number,
-  options?: string[],
-  onChange?: (value: ControlValue) => void,
-  onTrigger?: () => void,
-}
-
-type SandboxController = {
-  [key: string]: SandboxControl,
-}
-
-type SandboxControlRelaxed = Omit<SandboxControl, 'type'> & {
-  type?: ControlType;
-};
-
-type SandboxControllerRelaxed = {
-  [key: string]: SandboxControlRelaxed,
-}
-
-
-function controls(newSBController: SandboxControllerRelaxed) {
-  const InternalMessageType: typeof MessageType = {
-    CONSOLE_LOG: "console-log",
-    CODE_EXECUTED: "code-executed",
-    CONTROLLER_REGISTRATION: "controller-registration",
-    CONTROLLER_UPDATE: "controller-update",
-    EVAL: "eval",
-  }
-
-
-  function matchToInputType(control: SandboxControlRelaxed): ControlType {
-    if (control.type) return control.type;
-
-    if (typeof control.value === 'string') {
-      if (/^#[0-9A-Fa-f]{3,6}$/.test(control.value)) {
-        return 'color';
-      }
-      if (control.options && control.options.includes(control.value)) {
-        return 'select';
-      }
-      return 'text';
-    }
-
-    if (typeof control.value === 'boolean') {
-      return 'checkbox';
-    }
-
-    if (typeof control.value === 'number') {
-      if (control.min !== undefined && control.max !== undefined) {
-        return 'range';
-      }
-
-      /** TODO */    // return 'number';
-    }
-
-    if (control.onTrigger) {
-      return 'button';
-    }
-
-    throw new Error("Unable to determine control type");
-  }
-
-  /**
-   * should set current values from running controller state
-   */
-  const sandboxController: SandboxController = Object.fromEntries(
-    Object.entries(newSBController).map(([key, control]) => [key, {
-      ...control,
-      type: matchToInputType(control),
-    }]
-    ));
-
-  const registeredController: ControllerDescriptor = Object.fromEntries(
-    Object.entries(sandboxController).map(
-      ([key, control]) => [key, {
-        initialValue: control.value,
-        currentValue: control.value,
-        type: control.type,
-        min: control.min,
-        max: control.max,
-        step: control.step,
-        options: control.options
-      }]
-    )
-  )
-
-  Object.entries(sandboxController).forEach(([key, controlDesc]) => {
-    const foundControl = window._sandbox_internals.controller[key];
-    //TODO make sure the existing control state is valid for the new definition. 
-    //(sanitize values before applying)
-    const currentValue = foundControl?.currentValue || controlDesc.value;
-    sandboxController[key].value = currentValue;
-    registeredController[key].currentValue = currentValue;
-  })
-
-  function handleControllerUpdate(update: ControlUpdateMessage) {
-    const { source, value } = update;
-    const control = sandboxController[source];
-
-    if (!control) { return; }
-
-    // update value ref
-    control.value = value;
-    
-    if (control.type === 'button') {
-      control.onTrigger?.();
-    } else {
-      control.onChange?.(value);
-    }
-
-    window._sandbox_internals.draw();
-  }
-
-  window.addEventListener('message', function (event) {
-    if (event.data.type === InternalMessageType.CONTROLLER_UPDATE) {
-      handleControllerUpdate(event.data as ControlUpdateMessage);
-      return;
-    }
-  });
-
-  window.parent.postMessage({
-    type: InternalMessageType.CONTROLLER_REGISTRATION,
-    sandboxId: window._sandbox_internals.id,
-    runId: window._sandbox_internals.runId,
-    content: { ...registeredController }
-  }, '*');
-
-  return sandboxController;
-}
-
-
-function interceptConsole(console: Console, sandboxId: string, runId: string) {
-  const InternalMessageType: typeof MessageType = {
-    CONSOLE_LOG: "console-log",
-    CODE_EXECUTED: "code-executed",
-    CONTROLLER_REGISTRATION: "controller-registration",
-    CONTROLLER_UPDATE: "controller-update",
-    EVAL: "eval",
-  }
-
-  const methodsToIntercept: (keyof Console)[] = ['log', 'info', 'warn', 'debug', 'error']
-
-  methodsToIntercept.forEach(method => {
-    console[method] = (...args) => {
-      window.parent.postMessage({
-        type: InternalMessageType.CONSOLE_LOG,
-        sandboxId,
-        runId,
-        method,
-        content: args
-      }, '*');
-    }
-  })
-
-  window.addEventListener("error", (event) => {
-    event.preventDefault();
-
-    window.parent.postMessage({
-      type: InternalMessageType.CONSOLE_LOG,
-      sandboxId,
-      runId,
-      method: 'unhandled_error',
-      content: [event.message],
-    }, '*');
-  });
-
-  window.addEventListener("unhandledrejection", (event) => {
-    event.preventDefault();
-
-    window.parent.postMessage({
-      type: InternalMessageType.CONSOLE_LOG,
-      sandboxId,
-      runId,
-      method: 'unhandled_error',
-      content: [event.reason],
-    }, '*');
-  });
-}
-
 const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height, dragging }) => {
   const { addLog } = useGlobalConsole();
   const { updateNodeData, setCenter } = useReactFlow();
 
   const codeConnections = useHandleConnections({ type: 'target', id: "code" });
   const codeNodes = useNodesData(codeConnections.map((connection) => connection.source));
-  const code = codeNodes.filter((node: any) => node.type === "editor")[0]?.data.code;
+  const code = codeNodes.filter((node: any) => node.type === "editor")[0]?.data.code as string | undefined;
 
   const controllerConnections = useHandleConnections({ type: 'target', id: "controller" });
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
@@ -266,84 +40,12 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     // TODO add encoding step to ensure safe javascript output (e.g backticks?)
     // maybe use a function that can convert an object to literal format/representation?
-    const encodedControllerState = encodeURIComponent(JSON.stringify((controllerNode?.data.controller || {})));
+    const controllerState = controllerNode?.data.controller;
 
     if (sandbox && elem) {
       const runId = getRunId();
       elem.style.display = 'none';
-      const src = `
-        <html>
-          <head>
-            <style>
-              html, body {
-                margin: 0;
-                padding: 0;
-              }
-              canvas {
-                display: block;
-              }
-            </style>
-            <script defer src="./libs/p5.min.js"></script>
-            <script defer>
-              (${interceptConsole.toString()})(window.console, "${data.id}", "${runId}")
-            </script>
-            <script defer>
-              
-              window._sandbox_internals = {
-                id: "${data.id}",
-                runId: "${runId}",
-                controller: JSON.parse(
-                  decodeURIComponent("${encodedControllerState}")
-                ),
-                loop: (shouldLoop) => {
-                  if(shouldLoop && !isLooping()){
-                    loop()
-                  } else {
-                    noLoop()
-                  }
-                },
-                draw: () => {
-                  if (!isLooping()) {
-                    redraw();
-                  }
-                }
-              };
-            </script>
-            <script defer>
-              (${initScript.toString()})()
-            </script>
-            <script defer>{
-              window.p5lab = {
-                controls: ${controls.toString()}
-              }
-            }</script>
-            <script defer>
-              function windowResized() {
-                resizeCanvas(Math.round(windowWidth), Math.round(windowHeight))
-              }
-            </script>
-            <script defer>
-              ${code}
-            </script>
-            <script>
-              if (window.setup) {
-                const original = window.setup
-                window.setup = () => { 
-                  original(); 
-                  if(${!data.loop}) {
-                    noLoop();
-                  }
-                }
-              }
-            </script>
-            <script defer>
-              window.parent.postMessage({type: '${MessageType.CODE_EXECUTED}', sandboxId: "${data.id}", runId: "${runId}"}, '*');
-            </script>
-          </head>
-          <body style="padding: 0; margin: 0;">
-          </body>
-        </html>
-      `
+      const src = getIframeSourceTemplate(runId, code || "", data, controllerState);
       elem.srcdoc = src;
     }
   }
@@ -383,7 +85,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     if (sandbox && elem && elem.contentWindow) {
-      elem.contentWindow.postMessage({ type: MessageType.EVAL, expression: `window._sandbox_internals.loop(${toggledLoop})` }, '*');
+      elem.contentWindow.postMessage({ type: SandboxMessageType.EVAL, expression: `window._sandbox_internals.loop(${toggledLoop})` }, '*');
     }
   }
 
@@ -391,7 +93,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     if (sandbox && elem && elem.contentWindow) {
-      elem.contentWindow.postMessage({ type: MessageType.EVAL, expression: `saveCanvas('${data.id}')` }, '*');
+      elem.contentWindow.postMessage({ type: SandboxMessageType.EVAL, expression: `saveCanvas('${data.id}')` }, '*');
     }
   }
 
@@ -399,7 +101,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     if (sandbox && elem && elem.contentWindow) {
-      elem.contentWindow.postMessage({ type: MessageType.CONTROLLER_UPDATE, source: key, value: value }, '*');
+      elem.contentWindow.postMessage({ type: SandboxMessageType.CONTROLLER_UPDATE, source: key, value: value }, '*');
     }
   }
 
@@ -430,17 +132,17 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
         return;
       }
 
-      if (event.data.type === MessageType.CODE_EXECUTED) {
+      if (event.data.type === SandboxMessageType.CODE_EXECUTED) {
         handleCodeExecuted()
         return;
       }
 
-      if (event.data.type === MessageType.CONSOLE_LOG) {
+      if (event.data.type === SandboxMessageType.CONSOLE_LOG) {
         addLog({ sourceId: event.data.sandboxId, method: event.data.method, data: [...event.data.content] });
         return;
       }
 
-      if (event.data.type === MessageType.CONTROLLER_REGISTRATION) {
+      if (event.data.type === SandboxMessageType.CONTROLLER_REGISTRATION) {
         handleControllerRegistration(event.data.content);
         return;
       }
