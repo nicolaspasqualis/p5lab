@@ -175,8 +175,6 @@ function controls(newSBController: SandboxControllerRelaxed) {
   }
 
   window.addEventListener('message', function (event) {
-    console.log('message:', event.data);
-
     if (event.data.type === InternalMessageType.CONTROLLER_UPDATE) {
       handleControllerUpdate(event.data as ControlUpdateMessage);
       return;
@@ -254,8 +252,6 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
   const controllerNode = controllerNodes.filter((node: any) => node.type === "controller")[0];
 
-  //const [loop, setLoop] = useState(false);
-
   if (controllerNodes.length >= 2) { console.warn(" 2 CONTROLLERS DETECTED") }
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -264,21 +260,16 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
   const getRunId = () => String(runNumber.current);
 
-
-
   const runCode = () => {
     runNumber.current++;
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
-    console.log("CONTROLLER STATE", JSON.stringify(controllerNode?.data.controller as ControllerDescriptor || {}))
-
     // TODO add encoding step to ensure safe javascript output (e.g backticks?)
     // maybe use a function that can convert an object to literal format/representation?
-    const UNSAFE_STATE_ENCODING = JSON.stringify((controllerNode?.data.controller as ControllerDescriptor || {}));
+    const encodedControllerState = encodeURIComponent(JSON.stringify((controllerNode?.data.controller || {})));
 
     if (sandbox && elem) {
       const runId = getRunId();
-      console.log(runId);
       elem.style.display = 'none';
       const src = `
         <html>
@@ -301,7 +292,9 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
               window._sandbox_internals = {
                 id: "${data.id}",
                 runId: "${runId}",
-                controller: JSON.parse(\`${UNSAFE_STATE_ENCODING}\`),
+                controller: JSON.parse(
+                  decodeURIComponent("${encodedControllerState}")
+                ),
                 loop: (shouldLoop) => {
                   if(shouldLoop && !isLooping()){
                     loop()
@@ -366,7 +359,6 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   }
 
   const handleCodeExecuted = () => {
-    console.log(`${data.id}: EXECUTED`);
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     if (elem) {
       elem.style.display = 'block';
@@ -417,12 +409,10 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     }
 
     if (controllerNode) {
-      console.log("updating controller", controllerNode.data.id, newController)
       updateNodeData(controllerNode.data.id as string, {
         controller: newController
       })
     } else {
-      console.log("adding controller", newController)
       data.onAddController(data.id, newController);
     }
   }
@@ -436,7 +426,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const handleMessage = (event: MessageEvent) => {
       if (event.data.sandboxId !== data.id) { return; }
       if (event.data.runId !== getRunId()) {
-        console.log("Stale message | ", "expected: ", getRunId(), "received: ", event.data.runId)
+        console.debug("Stale message | ", "expected: ", getRunId(), "received: ", event.data.runId)
         return;
       }
 
@@ -467,7 +457,6 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
       <Handle type="target" id="code" position={Position.Left} isConnectable={false} />
       <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false} />
       <div className="node-drag-handle mx-[1px] mt-[1px] border-b flex flex-row text-sm gap-1 p-0">
-
         <span className='flex-grow flex items-center'>
           <Button onClick={handleCenterOnNode}>○</Button>
           <span className=" text-xs">{data.id}</span>
@@ -478,14 +467,12 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
         <span className='text-gray-300 mt-[1px]'>|</span>
         <Button onClick={runCode}>↺</Button>
       </div>
-      <iframe
+      <iframe className={`flex-grow min-h-0 min-w-0 block ${dragging ? "pointer-events-none" : "pointer-events-auto"}`}
         ref={iframeRef}
         id={data.id}
         title={`Sandbox ${data.id}`}
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups 
          allow-scripts allow-top-navigation-by-user-activation allow-downloads"
-
-        className={`flex-grow min-h-0 min-w-0 block ${dragging ? "pointer-events-none" : "pointer-events-auto"}`}
       />
     </div>
   );

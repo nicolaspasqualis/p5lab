@@ -3,13 +3,11 @@ import { Handle, Position, NodeResizer, useReactFlow, NodeProps, Node } from '@x
 import { Editor } from '@monaco-editor/react';
 import { Button } from './Button';
 
-type CodeEditorNodeProps = Node <
-  { 
-    id: string;
-    code: string; 
-    onAddSandbox: (editorId: string) => void;
-  }
->;
+type CodeEditorNodeProps = Node <{ 
+  id: string;
+  code: string; 
+  onAddSandbox: (editorId: string) => void;
+}>;
 
 const CodeEditorNode: React.FC<NodeProps<CodeEditorNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height  }) => {
   const { updateNodeData, setCenter } = useReactFlow();
@@ -22,13 +20,11 @@ const CodeEditorNode: React.FC<NodeProps<CodeEditorNodeProps>> = ({ data, positi
     )
   }
 
-
   return (
     <div className="bg-white w-full h-full overflow-y-clip">
       <NodeResizer />
       <Handle type="source" id="sandbox" position={Position.Right} className="top-3"isConnectable={false}/>
       <div className="w-full mx-[1px] mt-[1px] node-drag-handle border-b flex flex-row text-sm">
-        
         <span className='flex-grow flex items-center'> 
           <Button onClick={handleCenterOnNode}>○</Button>
           <span className=" text-xs">{data.id}</span>
