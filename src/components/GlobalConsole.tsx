@@ -101,7 +101,7 @@ export const GlobalConsole = () => {
 
   const [expanded, setExpanded] = useState(true);
 console.log(errors, others, warnings)
-  return (<Panel position="top-right" className={`max-w-72 m-0 p-3 ${expanded ? 'h-full w-full' : 'h-auto'}`}>
+  return (<Panel position="top-right" className={`max-w-72 m-0 p-3 max-h-[100vh] flex flex-col ${expanded ? 'w-full' : 'w-auto'}`}>
     
     <div className="flex bg-white flex-row gap-2 cursor-pointer mb-2 text-right content-center" onClick={() => setExpanded(!expanded)} >
       <div className="flex-grow justify-end flex content-center flex-wrap">{expanded ? <ChevronRightIcon/>: <ChevronLeftIcon/>}</div>
@@ -112,7 +112,7 @@ console.log(errors, others, warnings)
         {(errors + warnings + others === 0) && <span className='text-gray-300'>_</span>}
       </div>
     </div>
-    {expanded && <div className="text-sm w-full pl-1 max-h-full overflow-y-scroll w-full bg-white ">
+    {expanded && <div className="text-sm w-full pl-1 h-full overflow-y-scroll w-full bg-white ">
     {logs.length > 0 && <span className="flex flex-row items-center p-0 border-b mb-2">
         <span className=" px-0 text-gray-500 p-0">
           logs <span className="font-mono" >({logs.length})</span>
