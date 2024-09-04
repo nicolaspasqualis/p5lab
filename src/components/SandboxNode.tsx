@@ -1,16 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import { Button } from './Button';
-import { ControllerDescriptor } from '../types/types';
+import { ControlValue, ControllerDescriptor } from '../types/types';
 import { Toggle } from './controls/Toggle';
 import { useDebouncedCallback } from 'use-debounce';
 import { useGlobalConsole } from '../context/GlobalConsoleContext';
 import { getIframeSourceTemplate, SandboxMessageType } from '../Sandbox';
+import { ControllerNodeProps } from './ControllerNode';
 
 export type SandboxNodeProps = Node<{
   id: string;
   loop: boolean;
-  onControlUpdate: (key: string, value: number) => void;
+  onControlUpdate: (key: string, value: ControlValue) => void;
   onAddController: (sandboxId: string, controller: ControllerDescriptor) => void;
 }>;
 
@@ -20,13 +21,17 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
 
   const codeConnections = useHandleConnections({ type: 'target', id: "code" });
   const codeNodes = useNodesData(codeConnections.map((connection) => connection.source));
-  const code = codeNodes.filter((node: any) => node.type === "editor")[0]?.data.code as string | undefined;
+  const codeNode = codeNodes.filter((node: any) => node.type === "editor")[0]
+  const code = codeNode?.data.code as string | undefined;
 
   const controllerConnections = useHandleConnections({ type: 'target', id: "controller" });
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
-  const controllerNode = controllerNodes.filter((node: any) => node.type === "controller")[0];
+  const controllers = controllerNodes.filter((node: any) => node.type === "controller") as ControllerNodeProps[];
+  const tempSingleController = controllers.length > 0 ? controllers[0] : null;
 
-  if (controllerNodes.length >= 2) { console.warn(" 2 CONTROLLERS DETECTED") }
+  const [registeredControllers, setRegisteredControllers] = useState<ControllerDescriptor[]>([]) 
+
+  //if (controllerNodes.length >= 2) { console.warn(" 2 CONTROLLERS DETECTED") }
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -40,7 +45,7 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
     // TODO add encoding step to ensure safe javascript output (e.g backticks?)
     // maybe use a function that can convert an object to literal format/representation?
-    const controllerState = controllerNode?.data.controller;
+    const controllerState = tempSingleController?.data.controller;
 
     if (sandbox && elem) {
       const runId = getRunId();
@@ -108,13 +113,14 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   const handleControllerRegistration = (newController: ControllerDescriptor) => {
     if (!data.onControlUpdate) {
       updateNodeData(data.id, { onControlUpdate: handleControlUpdate })
-    }
+    } 
 
-    if (controllerNode) {
-      updateNodeData(controllerNode.data.id as string, {
+    if (tempSingleController) {
+      updateNodeData(tempSingleController.data.id as string, {
         controller: newController
       })
     } else {
+      //setRegisteredControllers(prev => [...prev, newController])
       data.onAddController(data.id, newController);
     }
   }
@@ -156,8 +162,8 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   return (
     <div className="bg-white w-full h-full flex flex-col">
       <NodeResizer minWidth={50} minHeight={50} onResizeStart={handleResizingStart} onResizeEnd={handleResizingEnd} />
-      <Handle type="target" id="code" position={Position.Left} isConnectable={false} />
-      <Handle type="target" id="controller" position={Position.Bottom} className='left-3' isConnectable={false} />
+      <Handle type="target" id="code" position={Position.Left} isConnectable={!codeNode} />
+      <Handle type="target" id="controller" position={Position.Bottom} className='left-3 [&not:(.valid)]:bg-red-400' isConnectable={!tempSingleController} />
       <div className="node-drag-handle mx-[1px] mt-[1px] border-b flex flex-row text-sm gap-1 p-0">
         <span className='flex-grow flex items-center'>
           <Button onClick={handleCenterOnNode}>○</Button>

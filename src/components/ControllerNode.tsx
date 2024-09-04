@@ -1,5 +1,5 @@
-import React from 'react';
-import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections, Node, NodeProps } from '@xyflow/react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Handle, Position, NodeResizer, useReactFlow, useNodesData, useHandleConnections, Node, NodeProps, useUpdateNodeInternals } from '@xyflow/react';
 import { TriggerButton } from './controls/TriggerButton';
 import { Button as UIButton } from './Button';
 import { ControlDescriptor, ControllerDescriptor } from '../types/types';
@@ -8,19 +8,37 @@ import { Toggle } from './controls/Toggle';
 import { Color } from './controls/Color';
 import { Select } from './controls/Select';
 import { Textarea } from './controls/Textarea';
+import { SandboxNodeProps } from './SandboxNode';
 
-type ControllerNodeProps = Node <{
+export type ControllerNodeProps = Node <{
   id: string;
   controller: ControllerDescriptor;
 }>;
 
 const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height }) => {
   const { updateNodeData, setCenter } = useReactFlow();
+
+  const updateNodeInternals = useUpdateNodeInternals();
   const connections = useHandleConnections({ type: 'source', id: "sandbox" });
   // ? ↓ unnecessary node-data state?
   const nodesData = useNodesData(connections.map((connection) => connection.target));
-  const sandboxNode = nodesData.filter((node: any) => node.type === "sandbox")[0]?.data;
+  const sandboxNodes = nodesData.filter((node: any) => node.type === "sandbox")as SandboxNodeProps[];
 
+  const [contentHeight, setContentHeight] = useState(height);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  useLayoutEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+      console.log("updatin", contentRef.current.scrollHeight)
+      
+    }
+
+  }, [contentRef, data.controller]);
+
+  useEffect(() => {
+    updateNodeInternals(data.id)
+  }, [contentHeight])
 
   /**
    * TODO
@@ -41,9 +59,10 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
 
   const handleControlUpdate = (key: string, value: number | string | boolean) => {
     console.log("controller triggering update:", key, value)
-    if (sandboxNode) {
-      (sandboxNode.onControlUpdate as (key: string, value: number | string | boolean) => void)(key, value);
-    }
+
+    sandboxNodes.forEach(sandbox => {
+      sandbox.data.onControlUpdate(key, value);
+    });
 
     updateNodeData(data.id, {
       controller: {
@@ -111,23 +130,24 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
   };
 
   return (
-    <div className="bg-white w-full h-full">
-      <NodeResizer minWidth={160}/>
-      <Handle type="source" id="sandbox" position={Position.Top} className='left-3' isConnectable={false} />
-      <div className="w-full mx-[1px] mt-[1px] node-drag-handle border-b flex flex-row text-sm">
-        
-        <span className='flex-grow flex items-center'>  
-          <UIButton onClick={handleCenterOnNode}>○</UIButton>
-          <span className=" text-xs">{data.id}</span>
-        </span>
-        <UIButton onClick={() => console.warn("not implemented")}>↺</UIButton>
-      </div>
-      <div className='m-2'>
-        {Object.entries(data.controller).map(
-          ([key, control]) => <div key={key} className="mb-2">
-            {renderControl(key, control)}
-          </div>
-        )}
+    <div className={`bg-white w-full h-[${contentHeight}px] `} ref={contentRef}>
+      <NodeResizer minWidth={160} minHeight={contentHeight} maxHeight={contentHeight}/>
+      <Handle type="source" id="sandbox" position={Position.Top} className='left-3' isConnectable={true} />
+      <div className='flex flex-col' >
+        <div className="w-full mx-[1px] mt-[1px] node-drag-handle border-b flex flex-row text-sm">
+          <span className='flex-grow flex items-center'>  
+            <UIButton onClick={handleCenterOnNode}>○</UIButton>
+            <span className=" text-xs">{data.id}</span>
+          </span>
+          <UIButton onClick={() => console.warn("not implemented")}>↺</UIButton>
+        </div>
+        <div className='m-2 h-full flex-grow overflow-y-scroll flex flex-col gap-2' >
+          {Object.entries(data.controller).map(
+            ([key, control]) => <div key={key} className="">
+              {renderControl(key, control)}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

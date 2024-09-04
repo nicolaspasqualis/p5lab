@@ -3,6 +3,9 @@ import { useGlobalConsole } from "../context/GlobalConsoleContext";
 import { LogEntry } from "../types/types";
 import React, { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon, ChevronRightIcon, ChevronLeftIcon } from '@radix-ui/react-icons';
+import { Button } from "./Button";
+
+
 
 interface LogEntryVisualizerProps {
   log: LogEntry;
@@ -94,14 +97,14 @@ const LogEntryVisualizer: React.FC<LogEntryVisualizerProps> = ({ log }) => {
 };
 
 export const GlobalConsole = () => {
-  const { logs, errors, warnings, others } = useGlobalConsole();
+  const { logs, errors, warnings, others, clearLogs } = useGlobalConsole();
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 console.log(errors, others, warnings)
-  return (<Panel position="top-right" className={`max-w-72 m-0 p-3 bg-white ${expanded ? 'h-full w-full' : 'h-auto'}`}>
+  return (<Panel position="top-right" className={`max-w-72 m-0 p-3 ${expanded ? 'h-full w-full' : 'h-auto'}`}>
     
-    <div className="flex flex-row gap-2 cursor-pointer mb-2 text-right content-center" onClick={() => setExpanded(!expanded)} >
-      <div className="flex-grow flex content-center flex-wrap">{expanded ? <ChevronRightIcon/>: <ChevronLeftIcon/>}</div>
+    <div className="flex bg-white flex-row gap-2 cursor-pointer mb-2 text-right content-center" onClick={() => setExpanded(!expanded)} >
+      <div className="flex-grow justify-end flex content-center flex-wrap">{expanded ? <ChevronRightIcon/>: <ChevronLeftIcon/>}</div>
       <div className="flex flex-row gap-2">
         {errors > 0 && <span className={getLogColor('error')}>{getLogIcon('error')} {errors}</span> }
         {warnings > 0 && <span className={getLogColor('warning')}>{getLogIcon('warning')} {warnings}</span> }
@@ -109,7 +112,14 @@ console.log(errors, others, warnings)
         {(errors + warnings + others === 0) && <span className='text-gray-300'>_</span>}
       </div>
     </div>
-    {expanded && <div className="text-sm w-full pl-1 max-h-full overflow-y-scroll w-full">
+    {expanded && <div className="text-sm w-full pl-1 max-h-full overflow-y-scroll w-full bg-white ">
+    {logs.length > 0 && <span className="flex flex-row items-center p-0 border-b mb-2">
+        <span className=" px-0 text-gray-500 p-0">
+          logs <span className="font-mono" >({logs.length})</span>
+        </span>
+        <Button onClick={()=> {clearLogs()} }>delete</Button>
+      </span>
+}
       {logs.map((l, i) => <LogEntryVisualizer key={i} log={l}/>)}
     </div>}
   </Panel>)

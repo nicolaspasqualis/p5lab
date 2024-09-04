@@ -272,6 +272,16 @@ const FlowEditor: React.FC = () => {
     setEdges((eds) => eds.concat(newEdge));
   }, [setNodes, setEdges]);
 
+
+  const addEmptySandbox = useCallback(() => {
+    const position = screenToFlowPosition({x: 100, y:100});
+
+    const id = generateId('sandbox');
+    const newNode: Node = CreateSandboxNode(id, addController, position);
+
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
+
   const addController = useCallback((sandboxId: string, controller: ControllerDescriptor) => {
     const sandboxNode = getNode(sandboxId);
     if (!sandboxNode) {
@@ -289,6 +299,16 @@ const FlowEditor: React.FC = () => {
     setNodes((nds) => nds.concat(newNode));
     setEdges((eds) => eds.concat(newEdge));
   }, [setNodes, setEdges]);
+
+
+  const addEmptyController = useCallback(() => {
+    const id = generateId('controller');
+
+    const position = screenToFlowPosition({x: 100, y:100});
+    const newNode: Node = CreateControllerNode(id, {}, position);
+
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
 
   const addEditor = useCallback(() => {
     const id = generateId('editor');
@@ -353,8 +373,10 @@ const FlowEditor: React.FC = () => {
               />
             </label>
             <span className='text-gray-300'>|</span>
-            <Button onClick={addEditor}>○ editor</Button>
-            <Button onClick={addInfo}>○ info</Button>
+            <Button onClick={addEditor}>+ editor</Button>
+            <Button onClick={addEmptySandbox}>+ sandbox</Button>
+            <Button onClick={addEmptyController}>+ controller</Button>
+            <Button onClick={addInfo}>+ info</Button>
             <span className='text-gray-300'>|</span>
             <Toggle label={"metadata"} value={showInfo} showValue={false} onChange={toggleInfo} className={'px-1 flex items-center flex-row gap-2 text-md rounded bg-white'}></Toggle>
             {/* <Button onClick={toggleInfo}>show metadata</Button>  */}
