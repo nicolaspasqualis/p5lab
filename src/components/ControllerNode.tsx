@@ -142,11 +142,16 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
           <UIButton onClick={() => console.warn("not implemented")}>↺</UIButton>
         </div>
         <div className='m-2 h-full flex-grow overflow-y-scroll flex flex-col gap-2' >
-          {Object.entries(data.controller).map(
-            ([key, control]) => <div key={key} className="">
-              {renderControl(key, control)}
-            </div>
-          )}
+          {Object.entries(data.controller).length > 0 
+            ? Object.entries(data.controller).map(
+              ([key, control]) => <div key={key} className="">
+                {renderControl(key, control)}
+              </div>
+              )
+            : <div className='text-center text-xs'>
+                <p className='text-gray-500'>ⓘ empty</p>
+              </div>
+          }
         </div>
       </div>
     </div>
