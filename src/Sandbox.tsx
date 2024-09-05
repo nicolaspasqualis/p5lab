@@ -114,9 +114,12 @@ function controls(newSBController: SandboxControllerRelaxed) {
     const foundControl = (window as SandboxWindow)._sandbox_internals.controller[key];
     //TODO make sure the existing control state is valid for the new definition. 
     //(sanitize values before applying)
-    const currentValue = foundControl?.currentValue || controlDesc.value;
-    sandboxController[key].value = currentValue;
-    registeredController[key].currentValue = currentValue;
+    const previousValue = foundControl?.currentValue;
+     // TODO validate against new control schema
+    const previousValueIsValid = previousValue != null && previousValue != undefined;
+    const newValue = previousValueIsValid ? previousValue : controlDesc.value;
+    sandboxController[key].value = newValue;
+    registeredController[key].currentValue = newValue;
   })
 
   function handleControllerUpdate(update: ControlUpdateMessage) {
