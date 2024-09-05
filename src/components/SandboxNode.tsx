@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import { Button } from './Button';
 import { ControlValue, ControllerDescriptor } from '../types/types';
@@ -28,10 +28,6 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   const controllerNodes = useNodesData(controllerConnections.map((connection) => connection.source));
   const controllers = controllerNodes.filter((node: any) => node.type === "controller") as ControllerNodeProps[];
   const tempSingleController = controllers.length > 0 ? controllers[0] : null;
-
-  const [registeredControllers, setRegisteredControllers] = useState<ControllerDescriptor[]>([]) 
-
-  //if (controllerNodes.length >= 2) { console.warn(" 2 CONTROLLERS DETECTED") }
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
