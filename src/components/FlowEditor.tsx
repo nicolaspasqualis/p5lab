@@ -80,6 +80,7 @@ const CreateSandboxNode = (
     type: 'sandbox',
     data: { 
       id,
+      loop: true,
       onAddController,
     },
     position,
@@ -401,6 +402,8 @@ const FlowEditor: React.FC = () => {
         selectionMode={SelectionMode.Partial}
         panOnScrollSpeed={1.25}
         minZoom={0.2}
+        snapToGrid={true}
+        snapGrid={[1,1]}
       >
         <Panel position={'top-left'} className='m-2'>
           <div className='flex flex-row gap-1'>
