@@ -63,7 +63,7 @@ const BaseNodeAttributes = {
 }
 
 const defaultEditorWidth = 480;
-const defaultEditorHeight = 920;
+const defaultEditorHeight = 720;
 const defaultSandboxWidth = 360;
 const defaultSandboxHeight = 360;
 const defaultControllerWidth = 180;
