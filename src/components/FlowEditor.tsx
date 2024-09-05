@@ -35,6 +35,7 @@ import './../react-flow.css';
 import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
 import welcomeState from './../welcome.json';
+import moebiusState from './../moebius-mesh.json';
 import { Toggle } from './controls/Toggle';
 import { useDnD } from '../context/DragAndDropContext';
 import { Draggable } from './Draggable';
@@ -191,6 +192,9 @@ const FlowEditor: React.FC = () => {
     const hash = window.location.hash;
     if (hash === '#welcome') {
       loadState(welcomeState);
+    }
+    if (hash === '#moebius') {
+      loadState(moebiusState);
     }
   }, []);
   
