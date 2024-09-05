@@ -117,7 +117,7 @@ console.log(errors, others, warnings)
         <span className=" px-0 text-gray-500 p-0">
           logs <span className="font-mono" >({logs.length})</span>
         </span>
-        <Button onClick={()=> {clearLogs()} }>delete</Button>
+        <Button onClick={()=> {clearLogs()} }>clear all</Button>
       </span>
 }
       {logs.map((l, i) => <LogEntryVisualizer key={i} log={l}/>)}

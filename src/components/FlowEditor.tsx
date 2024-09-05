@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, ChangeEvent, useEffect } from 'react';
+import React, { useState, useCallback, useRef, ChangeEvent, useEffect, DragEvent } from 'react';
 import CodeEditorNode from './CodeEditorNode';
 import SandboxNode from './SandboxNode';
 import ControllerNode from './ControllerNode';
@@ -36,6 +36,8 @@ import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
 import welcomeState from './../welcome.json';
 import { Toggle } from './controls/Toggle';
+import { useDnD } from '../context/DragAndDropContext';
+import { Draggable } from './Draggable';
 
 const nodeTypes: NodeTypes = {
   editor: CodeEditorNode,
@@ -43,6 +45,13 @@ const nodeTypes: NodeTypes = {
   controller: ControllerNode,
   info: InfoNode,
 };
+
+const nodeTypeIDs = {
+  sandbox: "sandbox",
+  editor: "editor",
+  controller: "controller",
+  info: "info",
+}
 
 type StoredState = {
   nodeCount: number,
@@ -175,6 +184,7 @@ const FlowEditor: React.FC = () => {
   const [showInfo, setShowInfo] = useState(true);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<Node, Edge>>();
   const nodeCount = useRef<number>(0);
+  const [dndData, setDndData] = useDnD() as [string | undefined, (value: string) => void]; 
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -273,11 +283,11 @@ const FlowEditor: React.FC = () => {
   }, [setNodes, setEdges]);
 
 
-  const addEmptySandbox = useCallback(() => {
-    const position = screenToFlowPosition({x: 100, y:100});
-
+  const addEmptySandbox = useCallback((position?: XYPosition) => {
     const id = generateId('sandbox');
-    const newNode: Node = CreateSandboxNode(id, addController, position);
+    const newNode: Node = CreateSandboxNode(id, addController, 
+      position || screenToFlowPosition({x: 100, y:100})
+    );
 
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
@@ -301,27 +311,28 @@ const FlowEditor: React.FC = () => {
   }, [setNodes, setEdges]);
 
 
-  const addEmptyController = useCallback(() => {
+  const addEmptyController = useCallback((position?: XYPosition) => {
     const id = generateId('controller');
 
-    const position = screenToFlowPosition({x: 100, y:100});
-    const newNode: Node = CreateControllerNode(id, {}, position);
+    const newNode: Node = CreateControllerNode(id, {}, 
+      position || screenToFlowPosition({x: 100, y:100})
+    );
 
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
 
-  const addEditor = useCallback(() => {
+  const addEditor = useCallback((position?: XYPosition) => {
     const id = generateId('editor');
-    const {x, y} = screenToFlowPosition({x: 100, y:100});
+    const {x, y} = position || screenToFlowPosition({x: 100, y:100});
     const newNode: Node = CreateEditorNode(id, addSandbox, {x, y});
 
     setNodes((nds) => nds.concat(newNode));
   }, [setNodes]);
 
 
-  const addInfo = useCallback(() => {
+  const addInfo = useCallback((position?: XYPosition) => {
     const id = generateId('info');
-    const {x, y} = screenToFlowPosition({x: 100, y:100});
+    const {x, y} = position || screenToFlowPosition({x: 100, y:100});
     const newNode: Node = CreateInfoNode(id, {x, y});
 
     setNodes((nds) => nds.concat(newNode));
@@ -330,6 +341,47 @@ const FlowEditor: React.FC = () => {
   const toggleInfo = () => {
     setShowInfo(prev => !prev);
   }
+
+
+  const onDragOver = useCallback((event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback((event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      
+      if (!dndData) { return; }
+
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      
+
+      switch(dndData) {
+        case nodeTypeIDs.editor: 
+          addEditor(position);
+          break;
+        case nodeTypeIDs.sandbox: 
+          addEmptySandbox(position);
+          break;
+        case nodeTypeIDs.controller: 
+          addEmptyController(position);
+          break;
+        case nodeTypeIDs.info: 
+          addInfo(position);
+          break;
+      }
+     },
+    [screenToFlowPosition, dndData],
+  );
+
+
+  const onDragStart = (event: DragEvent<HTMLElement>, nodeTypeId: string) => {
+    setDndData(nodeTypeId);
+    event.dataTransfer.effectAllowed = 'move';
+  };
 
   return (
     <div className="h-screen w-screen">
@@ -340,6 +392,8 @@ const FlowEditor: React.FC = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onInit={setRfInstance}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
         nodeTypes={nodeTypes}
         panOnScroll={true}
         selectionOnDrag={true}
@@ -373,10 +427,10 @@ const FlowEditor: React.FC = () => {
               />
             </label>
             <span className='text-gray-300'>|</span>
-            <Button onClick={addEditor}>+ editor</Button>
-            <Button onClick={addEmptySandbox}>+ sandbox</Button>
-            <Button onClick={addEmptyController}>+ controller</Button>
-            <Button onClick={addInfo}>+ info</Button>
+            <Draggable onDragStart={(e) => onDragStart(e, "editor")}>+ editor</Draggable>
+            <Draggable onDragStart={(e) => onDragStart(e, "sandbox")}>+ sandbox</Draggable>
+            <Draggable onDragStart={(e) => onDragStart(e, "controller")}>+ controller</Draggable>
+            <Draggable onDragStart={(e) => onDragStart(e, "info")}>+ info</Draggable>
             <span className='text-gray-300'>|</span>
             <Toggle label={"metadata"} value={showInfo} showValue={false} onChange={toggleInfo} className={'px-1 flex items-center flex-row gap-2 text-md rounded bg-white'}></Toggle>
             {/* <Button onClick={toggleInfo}>show metadata</Button>  */}
