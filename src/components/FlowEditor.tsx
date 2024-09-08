@@ -203,13 +203,13 @@ const FlowEditor: React.FC = () => {
   }, [projectName]);
 
   useEffect(() => {
-    const listener = (e: BeforeUnloadEvent) => {
+    const safeExitDialogTrigger = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = true;
     }
-    window.addEventListener('beforeunload', listener);
+    window.addEventListener('beforeunload', safeExitDialogTrigger);
     return () => {
-      window.removeEventListener('beforeunload', listener);
+      window.removeEventListener('beforeunload', safeExitDialogTrigger);
     };
   }, []);
 
