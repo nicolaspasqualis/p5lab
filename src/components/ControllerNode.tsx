@@ -9,6 +9,7 @@ import { Color } from './controls/Color';
 import { Select } from './controls/Select';
 import { Textarea } from './controls/Textarea';
 import { SandboxNodeProps } from './SandboxNode';
+import { NumberInput } from './controls/Number';
 
 export type ControllerNodeProps = Node <{
   id: string;
@@ -96,6 +97,18 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
           min={data.controller[key].min || 0}
           max={data.controller[key].max || 1}
           step={data.controller[key].step || 1}
+          onChange={(value) => {
+            handleControlUpdate(key, value);
+          }}
+        />
+      case 'number':
+        return <NumberInput 
+          label={key}
+          key={key}
+          value={Number(data.controller[key].currentValue)}
+          min={data.controller[key].min}
+          max={data.controller[key].max}
+          step={data.controller[key].step}
           onChange={(value) => {
             handleControlUpdate(key, value);
           }}

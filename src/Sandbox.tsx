@@ -76,7 +76,7 @@ function controls(newSBController: SandboxControllerRelaxed) {
         return 'range';
       }
 
-      /** TODO */    // return 'number';
+      return 'number';
     }
 
     if (control.onTrigger) {
