@@ -202,6 +202,17 @@ const FlowEditor: React.FC = () => {
     document.title = projectName + ' — p5lab';
   }, [projectName]);
 
+  useEffect(() => {
+    const listener = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = true;
+    }
+    window.addEventListener('beforeunload', listener);
+    return () => {
+      window.removeEventListener('beforeunload', listener);
+    };
+  }, []);
+
   const generateId = (nodeType: string) => {
     const id = `${nodeType}-${nodeCount.current}`;
     nodeCount.current++
