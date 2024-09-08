@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position, NodeResizer, useHandleConnections, useNodesData, useReactFlow, NodeProps, Node } from '@xyflow/react';
 import { Button } from './Button';
 import { ControlValue, ControllerDescriptor } from '../types/types';
@@ -18,6 +18,7 @@ export type SandboxNodeProps = Node<{
 const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbsoluteX, positionAbsoluteY, width, height, dragging }) => {
   const { addLog } = useGlobalConsole();
   const { updateNodeData, setCenter } = useReactFlow();
+  const [ _, setRegisteredControllers ] = useState<ControllerDescriptor[]>([]);
 
   const codeConnections = useHandleConnections({ type: 'target', id: "code" });
   const codeNodes = useNodesData(codeConnections.map((connection) => connection.source));
@@ -36,11 +37,11 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
   const getRunId = () => String(runNumber.current);
 
   const runCode = () => {
+    setRegisteredControllers([]);
     runNumber.current++;
     const sandbox = iframeRef.current as HTMLIFrameElement;
     const elem = document.getElementById(data.id) as HTMLIFrameElement;
-    // TODO add encoding step to ensure safe javascript output (e.g backticks?)
-    // maybe use a function that can convert an object to literal format/representation?
+    
     const controllerState = tempSingleController?.data.controller;
 
     if (sandbox && elem) {
@@ -116,9 +117,10 @@ const SandboxNode: React.FC<NodeProps<SandboxNodeProps>> = ({ data, positionAbso
         controller: newController
       })
     } else {
-      //setRegisteredControllers(prev => [...prev, newController])
       data.onAddController(data.id, newController);
     }
+
+    setRegisteredControllers(prev => [...prev, newController]);
   }
 
   useEffect(() => {

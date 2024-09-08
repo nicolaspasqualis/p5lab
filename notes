@@ -24,7 +24,7 @@ batch/apply same operation on multiple nodes. eg. loop, focus, delete,
 
 style ui
 
-debounce control changes
+throttle control changes
 
 !!! postMessage origin definitions
 ??? force cross-origin treatment so each runs in a separate thread?
@@ -32,8 +32,7 @@ debounce control changes
 !!! santize sandbox messages
     object/function rerialization
     sanitize control definitions and values
-!!! debounce output messages
-!!! error catching on sb?
+    batch output messages
 
 autocomplete
 p5 reference

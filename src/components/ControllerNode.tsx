@@ -75,6 +75,17 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
     })
   }
 
+  const handleReset = () => {
+    updateNodeData(data.id, {
+      controller: Object.fromEntries(
+        Object.entries(data.controller).map(([key, control]) => [key, {
+          ...control,
+          currentValue: control.initialValue,
+        }]
+      ))
+    })
+  }
+
   const renderControl = (key: string, control: ControlDescriptor) => {
     switch (control.type) {
       case 'range':
@@ -139,7 +150,7 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
             <UIButton onClick={handleCenterOnNode}>○</UIButton>
             <span className=" text-xs">{data.id}</span>
           </span>
-          <UIButton onClick={() => console.warn("not implemented")}>↺</UIButton>
+          <UIButton onClick={handleReset}>↺</UIButton>
         </div>
         <div className='m-2 h-full flex-grow overflow-y-scroll flex flex-col gap-2' >
           {Object.entries(data.controller).length > 0 
