@@ -421,7 +421,7 @@ const FlowEditor: React.FC = () => {
         snapGrid={[1,1]}
       >
         <Panel position={'top-left'} className='m-2'>
-          <div className='flex flex-row gap-1'>
+          <div className='flex flex-row gap-1 items-center'>
           <label className='m-[1px] px-1 py-0 text-black bg-white w-auto rounded'>
               <span>project:</span>
               <input name="project-name" 
@@ -446,10 +446,12 @@ const FlowEditor: React.FC = () => {
               />
             </label>
             <span className='text-gray-300'>|</span>
-            <Draggable onDragStart={(e) => onDragStart(e, "editor")}>+ editor</Draggable>
-            <Draggable onDragStart={(e) => onDragStart(e, "sandbox")}>+ sandbox</Draggable>
-            <Draggable onDragStart={(e) => onDragStart(e, "controller")}>+ controller</Draggable>
-            <Draggable onDragStart={(e) => onDragStart(e, "info")}>+ info</Draggable>
+            
+            <span className='text-gray-400'>nodes: </span>
+            <Draggable onDragStart={(e) => onDragStart(e, "editor")}>editor</Draggable>
+            <Draggable onDragStart={(e) => onDragStart(e, "sandbox")}>sandbox</Draggable>
+            <Draggable onDragStart={(e) => onDragStart(e, "controller")}>controller</Draggable>
+            <Draggable onDragStart={(e) => onDragStart(e, "info")}>info</Draggable>
             <span className='text-gray-300'>|</span>
             <Toggle label={"metadata"} value={showInfo} showValue={false} onChange={toggleInfo} className={'px-1 flex items-center flex-row gap-2 text-md rounded bg-white'}></Toggle>
             {/* <Button onClick={toggleInfo}>show metadata</Button>  */}
