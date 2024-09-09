@@ -179,7 +179,7 @@ const exportJSON = (fileName: string, jsonString: string) => {
 }
 
 const FlowEditor: React.FC = () => {
-  const [projectName, setProjectName] = useState('untitled');
+  const [projectName, setProjectName] = useState<string | undefined>();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { setViewport, getNode, getNodes, getEdges, screenToFlowPosition } = useReactFlow();
@@ -230,7 +230,7 @@ const FlowEditor: React.FC = () => {
         nodeCount: nodeCount.current,
         flow: flow,
       }
-      exportJSON(projectName, JSON.stringify(storedState))
+      exportJSON(projectName || 'untitled', JSON.stringify(storedState))
     }
   }, [rfInstance, projectName]);
 
@@ -426,6 +426,7 @@ const FlowEditor: React.FC = () => {
               <span>project:</span>
               <input name="project-name" 
                 className='pl-1 pr-1 w-auto rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'
+                placeholder='untitled'
                 value={projectName}
                 onChange={e => {setProjectName(e.target.value)}}
               ></input>
