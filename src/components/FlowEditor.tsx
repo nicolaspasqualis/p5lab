@@ -419,6 +419,8 @@ const FlowEditor: React.FC = () => {
         minZoom={0.2}
         snapToGrid={true}
         snapGrid={[1,1]}
+        fitView
+        fitViewOptions={{padding: 0.05}}
       >
         <Panel position={'top-left'} className='m-2'>
           <div className='flex flex-row gap-1 items-center'>
@@ -457,7 +459,9 @@ const FlowEditor: React.FC = () => {
             {/* <Button onClick={toggleInfo}>show metadata</Button>  */}
           </div>
         </Panel>
-        <Controls className='shadow-none'/>
+        <Controls className='shadow-none'
+          fitViewOptions={{padding: 0.05}}
+        />
         <MiniMap pannable zoomable 
           maskColor='transparent' 
           maskStrokeWidth={1} 

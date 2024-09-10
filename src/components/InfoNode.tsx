@@ -24,7 +24,16 @@ const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, posit
     updateNodeData(data.id, {markdown: event.target.value})
   };
 
-  const handleViewClick = () => {
+  const handleViewClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    const tag = target.tagName.toLowerCase();
+
+    // ignore if it comes from an interactive markdown target 
+    // (e.g anchors)
+    if (tag === 'a') {
+      return;
+    }
+
     setIsEditing(true);
   };  
 
@@ -57,7 +66,11 @@ const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, posit
           tabIndex={0}
           onFocus={handleViewClick}
         >
-          <ReactMarkdown>{data.markdown}</ReactMarkdown>
+          <ReactMarkdown components={{
+            a: ({ node, ...props }) => (
+              <a {...props} onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer" />
+            )
+          }}>{data.markdown}</ReactMarkdown>
         </div>
       )}
     </div>
