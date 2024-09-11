@@ -98,11 +98,9 @@ const LogEntryVisualizer: React.FC<LogEntryVisualizerProps> = ({ log }) => {
 
 export const GlobalConsole = () => {
   const { logs, errors, warnings, others, clearLogs } = useGlobalConsole();
-
   const [expanded, setExpanded] = useState(true);
-console.log(errors, others, warnings)
+  
   return (<Panel position="top-right" className={`max-w-72 m-0 p-3 max-h-[100vh] flex flex-col ${expanded ? 'w-full' : 'w-auto'}`}>
-    
     <div className="flex bg-white flex-row gap-2 cursor-pointer mb-2 text-right content-center" onClick={() => setExpanded(!expanded)} >
       <div className="flex-grow justify-end flex content-center flex-wrap">{expanded ? <ChevronRightIcon/>: <ChevronLeftIcon/>}</div>
       <div className="flex flex-row gap-2">
