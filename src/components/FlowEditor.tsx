@@ -183,7 +183,7 @@ const FlowEditor: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { setViewport, getNode, getNodes, getEdges, screenToFlowPosition } = useReactFlow();
-  const [showInfo, setShowInfo] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<Node, Edge>>();
   const nodeCount = useRef<number>(0);
   const [dndData, setDndData] = useDnD() as [string | undefined, (value: string) => void]; 
