@@ -5,12 +5,12 @@ p5lab is a canvas-like interface for running, comparing and experimenting with [
 
 Its current features aim at making algorithmic design workflows easier, with tools for executing multiple stateful instances of the same sketch, modifying parameters using GUI controls (sliders, toggles, text inputs, button triggers, etc), exporting renders, reducing the redraw loop for static designs, and others.
 
-[p5lab web ↗](https://nicolaspasqualis.github.io/p5lab/#welcome)
+[p5lab web ↗](https://nicolaspasqualis.github.io/p5lab/)
 
 ![](./doc/canvas.png)
 
-## [hello ↗](https://nicolaspasqualis.github.io/p5lab/#hello)
-Check out the [hello example](https://nicolaspasqualis.github.io/p5lab/#hello) or open a [blank flow](https://nicolaspasqualis.github.io/p5lab/) if already familiar with the tool.
+## [hello ↗](https://nicolaspasqualis.github.io/p5lab/#/examples/hello)
+Check out the [hello example](https://nicolaspasqualis.github.io/p5lab/#/examples/hello) or open a [blank flow](https://nicolaspasqualis.github.io/p5lab/#/new) if already familiar with the tool.
 
 >⚠ The API _will_ have breaking changes. Usage in "serious" projects is discouraged until the tool is proven to be stable and data loss is no longer a risk. Please open an issue if _spooky_ behaviour is encountered. 
 
@@ -51,9 +51,10 @@ https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
 * Provided as a default global object to the sandbox.
 * Contains a method to define controller parameters ```p5lab.controls({})```
 
-## Missing
+## Planned
 - Global undo-redo.
 - Copy / paste of nodes.
+- API documentation.
 - Canvas to video recording.
 - Code autocomplete for p5.js and p5lab.
 - Multi-select node operations.
@@ -64,4 +65,3 @@ https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
 p5lab doesn't provide a full node-based computational flow. At the moment, sandboxes are meant to run p5.js sketches and have no API to talk with other sandbox nodes.
 
 This allows for simple copy-pastable code generation with LLMs, which are quite good at p5 code.
-

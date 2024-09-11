@@ -31,8 +31,6 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
   useLayoutEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
-      console.log("updatin", contentRef.current.scrollHeight)
-      
     }
 
   }, [contentRef, data.controller]);
@@ -59,8 +57,6 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
   }
 
   const handleControlUpdate = (key: string, value: number | string | boolean) => {
-    console.log("controller triggering update:", key, value)
-
     sandboxNodes.forEach(sandbox => {
       sandbox.data.onControlUpdate(key, value);
     });

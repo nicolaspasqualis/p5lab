@@ -40,7 +40,7 @@ import moebiusState from './../moebius-mesh.json';
 import { Toggle } from './controls/Toggle';
 import { useDnD } from '../context/DragAndDropContext';
 import { Draggable } from './Draggable';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const nodeTypes: NodeTypes = {
   editor: CodeEditorNode,
@@ -191,14 +191,18 @@ const FlowEditor: React.FC = () => {
   const nodeCount = useRef<number>(0);
   const [dndData, setDndData] = useDnD() as [string | undefined, (value: string) => void]; 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const path = location.pathname;
-    console.log(location)
     // only loads preset flows for the following hash paths:
-    // home
-    if (path === '/') {
+    if (path === '/') { //
       loadState(helloState);
+      return;
+    }
+    // blank project
+    if (path === '/new') {
+      loadState(blankState);
       return;
     }
     // examples
@@ -206,13 +210,6 @@ const FlowEditor: React.FC = () => {
       loadState(moebiusState);
       return; 
     }
-    if (path === '/blank') {
-      loadState(blankState);
-      return;
-    }
-
-    return;
-
   }, [location]);
   
   useEffect(() => {
@@ -378,7 +375,6 @@ const FlowEditor: React.FC = () => {
     setShowInfo(prev => !prev);
   }
 
-
   const onDragOver = useCallback((event: DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -394,7 +390,6 @@ const FlowEditor: React.FC = () => {
         y: event.clientY,
       });
       
-
       switch(dndData) {
         case nodeTypeIDs.editor: 
           addEditor(position);
@@ -443,8 +438,9 @@ const FlowEditor: React.FC = () => {
       >
         <Panel position={'top-left'} className='m-2'>
           <div className='flex flex-row gap-1 items-center'>
-            {window.location.hash 
-              ? <label className='m-[1px] px-1 py-0 text-black bg-white w-auto rounded'>
+            { location.pathname === '/'
+              ? <Button onClick={()=> {navigate('/new')}}><span className='text-[#3700ff]'>new</span></Button>
+              : <label className='m-[1px] px-1 py-0 text-black bg-white w-auto rounded'>
                   <span>project:</span>
                   <input name="project-name" 
                     className='pl-1 pr-1 w-auto rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'
@@ -453,11 +449,8 @@ const FlowEditor: React.FC = () => {
                     onChange={e => {setProjectName(e.target.value)}}
                   ></input>
                 </label>
-              : <Button onClick={()=> {loadState(blankState)}}>new project</Button>
             }
-            
             <span className='text-gray-300'>|</span>
-
             <Button onClick={onExport}>export</Button>
             <label className='m-[1px] px-1 py-0 text-black bg-white rounded hover:bg-gray-200 focus:outline-none hover:ring-1 hover:ring-blue-500 hover:ring-opacity-50 cursor-pointer'>
               <span>import</span>
@@ -471,15 +464,18 @@ const FlowEditor: React.FC = () => {
               />
             </label>
             <span className='text-gray-300'>|</span>
-            
             <span className='text-gray-400'>nodes: </span>
             <Draggable onDragStart={(e) => onDragStart(e, "editor")}>editor</Draggable>
             <Draggable onDragStart={(e) => onDragStart(e, "sandbox")}>sandbox</Draggable>
             <Draggable onDragStart={(e) => onDragStart(e, "controller")}>controller</Draggable>
             <Draggable onDragStart={(e) => onDragStart(e, "info")}>info</Draggable>
             <span className='text-gray-300'>|</span>
-            <Toggle label={"metadata"} value={showInfo} showValue={false} onChange={toggleInfo} className={'px-1 flex items-center flex-row gap-2 text-md rounded bg-white'}></Toggle>
-            {/* <Button onClick={toggleInfo}>show metadata</Button>  */}
+            <Toggle className={'px-1 flex items-center flex-row gap-2 text-md rounded bg-white'}
+              label={"metadata"} 
+              value={showInfo} 
+              showValue={false} 
+              onChange={toggleInfo}
+            />
           </div>
         </Panel>
         <Controls className='shadow-none'
