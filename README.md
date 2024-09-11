@@ -9,8 +9,8 @@ Its current features aim at making algorithmic design workflows easier, with too
 
 ![](./doc/canvas.png)
 
-## [hello ↗](https://nicolaspasqualis.github.io/p5lab/#/examples/hello)
-Check out the [hello example](https://nicolaspasqualis.github.io/p5lab/#/examples/hello) or open a [blank flow](https://nicolaspasqualis.github.io/p5lab/#/new) if already familiar with the tool.
+## [hello](https://nicolaspasqualis.github.io/p5lab/#/examples/hello)
+Check out the [hello example](https://nicolaspasqualis.github.io/p5lab/) or open a [blank flow](https://nicolaspasqualis.github.io/p5lab/#/new) if already familiar with the tool.
 
 >⚠ The API _will_ have breaking changes. Usage in "serious" projects is discouraged until the tool is proven to be stable and data loss is no longer a risk. Please open an issue if _spooky_ behaviour is encountered. 
 
