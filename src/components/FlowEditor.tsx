@@ -34,7 +34,7 @@ import '@xyflow/react/dist/style.css';
 import './../react-flow.css';
 import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
-import welcomeState from './../welcome.json';
+import helloState from './../hello.json';
 import moebiusState from './../moebius-mesh.json';
 import { Toggle } from './controls/Toggle';
 import { useDnD } from '../context/DragAndDropContext';
@@ -190,8 +190,8 @@ const FlowEditor: React.FC = () => {
 
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash === '#welcome') {
-      loadState(welcomeState);
+    if (hash === '#hello') {
+      loadState(helloState);
     }
     if (hash === '#moebius') {
       loadState(moebiusState);

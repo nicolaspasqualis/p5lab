@@ -24,7 +24,7 @@ const InfoNode: FC<NodeProps<InfoNodeProps>> = ({ data, positionAbsoluteX, posit
     updateNodeData(data.id, {markdown: event.target.value})
   };
 
-  const handleViewClick = (event: MouseEvent) => {
+  const handleViewClick = (event: React.MouseEvent | React.FocusEvent) => {
     const target = event.target as HTMLElement;
     const tag = target.tagName.toLowerCase();
 
