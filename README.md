@@ -34,6 +34,8 @@ Check out the [hello example](https://nicolaspasqualis.github.io/p5lab/#hello) o
 * Can be connected to multiple sandboxes.
 * Controls values can be reset to their initial state.
 
+https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
+
 `info` node:
 * An editable text component that can render markdown.
 * Useful for adding annotations and links to the canvas.
