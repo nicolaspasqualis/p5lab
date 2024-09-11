@@ -242,7 +242,7 @@ export const getIframeSourceTemplate = (runId: string, code: string, data: any, 
         display: block;
       }
     </style>
-    <script defer src="./libs/p5.min.js"></script>
+    <script defer src="/p5lab/libs/p5.min.js"></script>
     <script defer>
       (${interceptConsole.toString()})(window.console, "${data.id}", "${runId}")
     </script>

@@ -34,11 +34,13 @@ import '@xyflow/react/dist/style.css';
 import './../react-flow.css';
 import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
+import blankState from './../blank.json';
 import helloState from './../hello.json';
 import moebiusState from './../moebius-mesh.json';
 import { Toggle } from './controls/Toggle';
 import { useDnD } from '../context/DragAndDropContext';
 import { Draggable } from './Draggable';
+import { useLocation } from 'react-router-dom';
 
 const nodeTypes: NodeTypes = {
   editor: CodeEditorNode,
@@ -55,6 +57,7 @@ const nodeTypeIDs = {
 }
 
 type StoredState = {
+  projectName?: string,
   nodeCount: number,
   flow: ReactFlowJsonObject<Node, Edge>
 }
@@ -187,16 +190,30 @@ const FlowEditor: React.FC = () => {
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance<Node, Edge>>();
   const nodeCount = useRef<number>(0);
   const [dndData, setDndData] = useDnD() as [string | undefined, (value: string) => void]; 
+  const location = useLocation();
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash === '#hello') {
+    const path = location.pathname;
+    console.log(location)
+    // only loads preset flows for the following hash paths:
+    // home
+    if (path === '/') {
       loadState(helloState);
+      return;
     }
-    if (hash === '#moebius') {
+    // examples
+    if (path === '/examples/moebius') {
       loadState(moebiusState);
+      return; 
     }
-  }, []);
+    if (path === '/blank') {
+      loadState(blankState);
+      return;
+    }
+
+    return;
+
+  }, [location]);
   
   useEffect(() => {
     document.title = projectName + ' — p5lab';
@@ -227,6 +244,7 @@ const FlowEditor: React.FC = () => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
       const storedState: StoredState = {
+        projectName: projectName,
         nodeCount: nodeCount.current,
         flow: flow,
       }
@@ -257,6 +275,8 @@ const FlowEditor: React.FC = () => {
 
   const loadState = (state: StoredState) => {
     const restoreFlow = async () => {
+      setProjectName(state.projectName);
+
       if (state?.nodeCount){
         nodeCount.current = state.nodeCount;
       }
@@ -393,7 +413,6 @@ const FlowEditor: React.FC = () => {
     [screenToFlowPosition, dndData],
   );
 
-
   const onDragStart = (event: DragEvent<HTMLElement>, nodeTypeId: string) => {
     setDndData(nodeTypeId);
     event.dataTransfer.effectAllowed = 'move';
@@ -424,15 +443,19 @@ const FlowEditor: React.FC = () => {
       >
         <Panel position={'top-left'} className='m-2'>
           <div className='flex flex-row gap-1 items-center'>
-          <label className='m-[1px] px-1 py-0 text-black bg-white w-auto rounded'>
-              <span>project:</span>
-              <input name="project-name" 
-                className='pl-1 pr-1 w-auto rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'
-                placeholder='untitled'
-                value={projectName}
-                onChange={e => {setProjectName(e.target.value)}}
-              ></input>
-            </label>
+            {window.location.hash 
+              ? <label className='m-[1px] px-1 py-0 text-black bg-white w-auto rounded'>
+                  <span>project:</span>
+                  <input name="project-name" 
+                    className='pl-1 pr-1 w-auto rounded hover:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-opacity-50'
+                    placeholder='untitled'
+                    value={projectName}
+                    onChange={e => {setProjectName(e.target.value)}}
+                  ></input>
+                </label>
+              : <Button onClick={()=> {loadState(blankState)}}>new project</Button>
+            }
+            
             <span className='text-gray-300'>|</span>
 
             <Button onClick={onExport}>export</Button>
