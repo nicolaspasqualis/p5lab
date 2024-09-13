@@ -1,18 +1,19 @@
-![](./doc/p5lab.gif)
+![Static Badge](https://img.shields.io/badge/⚠-wip-yellow?style=flat-square)
+
+![p5lab](./doc/p5lab.gif)
 
 # [p5lab](https://nicolaspasqualis.github.io/p5lab/)
-p5lab is a canvas-like interface for running, comparing and experimenting with [p5.js](https://p5js.org/) code in the browser. 
+p5lab is a canvas-style interface for running, comparing and experimenting with [p5.js](https://p5js.org/) code in the browser. 
 
-Its current features aim at making algorithmic design workflows easier, with tools for executing multiple stateful instances of the same sketch, modifying parameters using GUI controls (sliders, toggles, text inputs, button triggers, etc), exporting renders, reducing the redraw loop for static designs, and others.
+It aims to make algorithmic design workflows easier, with tools for executing multiple stateful instances of the same sketch, modifying parameters using GUI controls (sliders, toggles, text inputs, button triggers, etc), exporting renders, reducing the redraw loop for static designs, and others.
 
-[p5lab web ↗](https://nicolaspasqualis.github.io/p5lab/)
+### [p5lab web ↗](https://nicolaspasqualis.github.io/p5lab/)
 
-![](./doc/canvas.png)
+Check out the [intro example ↗](https://nicolaspasqualis.github.io/p5lab/) or open a [blank flow ↗](https://nicolaspasqualis.github.io/p5lab/#/new).
 
-## [hello](https://nicolaspasqualis.github.io/p5lab/#/examples/hello)
-Check out the [hello example](https://nicolaspasqualis.github.io/p5lab/) or open a [blank flow](https://nicolaspasqualis.github.io/p5lab/#/new) if already familiar with the tool.
+![](./doc/intro.png)
+> ⚠ The API _will_ have breaking changes. Usage in "serious" projects is discouraged until the tool is proven to be stable and data loss is no longer a risk. Please open an issue if _spooky_ behaviour is encountered.
 
->⚠ The API _will_ have breaking changes. Usage in "serious" projects is discouraged until the tool is proven to be stable and data loss is no longer a risk. Please open an issue if _spooky_ behaviour is encountered. 
 
 ## Basics
 
@@ -40,7 +41,7 @@ https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
 * An editable text component that can render markdown.
 * Useful for adding annotations and links to the canvas.
 
-`logs` tool:
+`log viewer` tool:
 * Displays the global logs of all running sandboxes, which is useful for debugging, catching errors, etc.
 * It intercepts calls to the console object and error events in the sandbox in order to display the messages.
 
@@ -52,9 +53,10 @@ https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
 * Contains a method to define controller parameters ```p5lab.controls({})```
 
 ## Planned
-- Global undo-redo.
-- Copy / paste of nodes.
 - API documentation.
+- Global undo-redo.
+- Keyboard shortcuts.
+- Copy / paste of nodes.
 - Canvas to video recording.
 - Code autocomplete for p5.js and p5lab.
 - Multi-select node operations.

@@ -20,7 +20,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* filter: invert(1) hue-rotate(180deg) hue-rotate(180deg); */
 }
 
 a {

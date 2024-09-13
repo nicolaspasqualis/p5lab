@@ -1,1 +1,278 @@
-{"nodeCount":28,"flow":{"nodes":[{"dragHandle":".node-drag-handle","id":"sandbox-1","type":"sandbox","data":{"id":"sandbox-1","loop":true},"position":{"x":2084,"y":-506},"width":362,"height":342,"measured":{"width":362,"height":342},"selected":false,"dragging":false,"resizing":false},{"dragHandle":".node-drag-handle","id":"controller-2","type":"controller","data":{"id":"controller-2","controller":{"points":{"initialValue":3,"currentValue":4,"type":"range","min":2,"max":12},"vel":{"initialValue":0.5,"currentValue":0.678,"type":"range","min":0,"max":1,"step":0.001}}},"position":{"x":2085,"y":-78},"width":180,"measured":{"width":180,"height":95},"selected":false,"dragging":false},{"dragHandle":".node-drag-handle","id":"editor-5","type":"editor","data":{"id":"editor-5","code":"const {points, vel, innerRadius} = p5lab.controls({\n  points: { value: 3, min: 2, max: 12 },\n  vel: {value: 0.5, min: 0, max: 1, step: 0.001 },\n})\n\nfunction setup() {\n  createCanvas(windowWidth, windowHeight);\n  angleMode(DEGREES);\n  colorMode(HSB);\n}\n\nfunction draw() {\n  background(255);\n  stroke(0);\n  const centerX = width / 2;\n  const centerY = height / 2;\n  const pointCount = round(points.value);\n  const angleStep = millis() / 100 * vel.value;\n\n  let angle = 0;\n  beginShape(TRIANGLE_STRIP);\n  for (let i = 0; i <= pointCount; i += 1) {\n    vertex(\n      centerX,\n      centerY + sin(angle) * centerY,\n    );\n    angle += angleStep;\n    vertex(\n      centerX + cos(angle) * width / 3,\n      centerY,\n    );\n    angle += angleStep;\n  }\n  endShape();\n}\n"},"position":{"x":1559,"y":-504},"width":481,"height":745,"measured":{"width":481,"height":745},"selected":false,"dragging":false,"resizing":false},{"dragHandle":".node-drag-handle","id":"sandbox-19","type":"sandbox","data":{"id":"sandbox-19","loop":true},"position":{"x":2487,"y":-505},"width":334,"height":340,"measured":{"width":334,"height":340},"selected":false,"dragging":false},{"dragHandle":".node-drag-handle","id":"controller-20","type":"controller","data":{"id":"controller-20","controller":{"points":{"initialValue":3,"currentValue":6,"type":"range","min":2,"max":12},"vel":{"initialValue":0.5,"currentValue":1,"type":"range","min":0,"max":1,"step":0.001}}},"position":{"x":2487,"y":-75},"width":180,"measured":{"width":180,"height":95},"selected":false,"dragging":false},{"dragHandle":".node-drag-handle","id":"info-21","type":"info","data":{"id":"info-21","markdown":"### moebius mesh"},"position":{"x":1208,"y":-503},"width":282,"height":97,"measured":{"width":282,"height":97},"selected":false,"dragging":false,"resizing":false},{"dragHandle":".node-drag-handle","id":"sandbox-26","type":"sandbox","data":{"id":"sandbox-26","loop":true},"position":{"x":2861,"y":-505},"width":334,"height":340,"measured":{"width":334,"height":340},"selected":false,"dragging":false},{"dragHandle":".node-drag-handle","id":"controller-27","type":"controller","data":{"id":"controller-27","controller":{"points":{"initialValue":3,"currentValue":12,"type":"range","min":2,"max":12},"vel":{"initialValue":0.5,"currentValue":1,"type":"range","min":0,"max":1,"step":0.001}}},"position":{"x":2861,"y":-75},"width":180,"measured":{"width":180,"height":95},"selected":false,"dragging":false}],"edges":[{"id":"controller-2->sandbox-1","source":"controller-2","sourceHandle":"sandbox","target":"sandbox-1","targetHandle":"controller","selected":false},{"source":"editor-5","sourceHandle":"sandbox","target":"sandbox-1","targetHandle":"code","id":"xy-edge__editor-5sandbox-sandbox-1code","selected":false},{"id":"editor-5->sandbox-19","source":"editor-5","sourceHandle":"sandbox","target":"sandbox-19","targetHandle":"code","selected":false},{"id":"controller-20->sandbox-19","source":"controller-20","sourceHandle":"sandbox","target":"sandbox-19","targetHandle":"controller","selected":false},{"id":"editor-5->sandbox-26","source":"editor-5","sourceHandle":"sandbox","target":"sandbox-26","targetHandle":"code","selected":false},{"id":"controller-27->sandbox-26","source":"controller-27","sourceHandle":"sandbox","target":"sandbox-26","targetHandle":"controller","selected":false}],"viewport":{"x":-383.64773058758146,"y":522.3972437399208,"zoom":0.544168623596346}}}
+{
+    "nodeCount": 28,
+    "flow": {
+        "nodes": [
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "sandbox-1",
+                "type": "sandbox",
+                "data": {
+                    "id": "sandbox-1",
+                    "loop": true
+                },
+                "position": {
+                    "x": 2084,
+                    "y": -506
+                },
+                "width": 362,
+                "height": 342,
+                "measured": {
+                    "width": 362,
+                    "height": 342
+                },
+                "selected": false,
+                "dragging": false,
+                "resizing": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "controller-2",
+                "type": "controller",
+                "data": {
+                    "id": "controller-2",
+                    "controller": {
+                        "points": {
+                            "initialValue": 3,
+                            "currentValue": 4,
+                            "type": "range",
+                            "min": 2,
+                            "max": 12
+                        },
+                        "vel": {
+                            "initialValue": 0.5,
+                            "currentValue": 0.678,
+                            "type": "range",
+                            "min": 0,
+                            "max": 1,
+                            "step": 0.001
+                        }
+                    }
+                },
+                "position": {
+                    "x": 2085,
+                    "y": -78
+                },
+                "width": 180,
+                "measured": {
+                    "width": 180,
+                    "height": 95
+                },
+                "selected": false,
+                "dragging": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "editor-5",
+                "type": "editor",
+                "data": {
+                    "id": "editor-5",
+                    "code": "const {points, vel, innerRadius} = p5lab.controls({\n  points: { value: 3, min: 2, max: 12 },\n  vel: {value: 0.5, min: 0, max: 1, step: 0.001 },\n})\n\nfunction setup() {\n  createCanvas(windowWidth, windowHeight);\n  angleMode(DEGREES);\n  colorMode(HSB);\n}\n\nfunction draw() {\n  background(255);\n  stroke(0);\n  const centerX = width / 2;\n  const centerY = height / 2;\n  const pointCount = round(points.value);\n  const angleStep = millis() / 100 * vel.value;\n\n  let angle = 0;\n  beginShape(TRIANGLE_STRIP);\n  for (let i = 0; i <= pointCount; i += 1) {\n    vertex(\n      centerX,\n      centerY + sin(angle) * centerY,\n    );\n    angle += angleStep;\n    vertex(\n      centerX + cos(angle) * width / 3,\n      centerY,\n    );\n    angle += angleStep;\n  }\n  endShape();\n}\n"
+                },
+                "position": {
+                    "x": 1559,
+                    "y": -504
+                },
+                "width": 481,
+                "height": 745,
+                "measured": {
+                    "width": 481,
+                    "height": 745
+                },
+                "selected": false,
+                "dragging": false,
+                "resizing": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "sandbox-19",
+                "type": "sandbox",
+                "data": {
+                    "id": "sandbox-19",
+                    "loop": true
+                },
+                "position": {
+                    "x": 2487,
+                    "y": -505
+                },
+                "width": 334,
+                "height": 340,
+                "measured": {
+                    "width": 334,
+                    "height": 340
+                },
+                "selected": false,
+                "dragging": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "controller-20",
+                "type": "controller",
+                "data": {
+                    "id": "controller-20",
+                    "controller": {
+                        "points": {
+                            "initialValue": 3,
+                            "currentValue": 6,
+                            "type": "range",
+                            "min": 2,
+                            "max": 12
+                        },
+                        "vel": {
+                            "initialValue": 0.5,
+                            "currentValue": 1,
+                            "type": "range",
+                            "min": 0,
+                            "max": 1,
+                            "step": 0.001
+                        }
+                    }
+                },
+                "position": {
+                    "x": 2487,
+                    "y": -75
+                },
+                "width": 180,
+                "measured": {
+                    "width": 180,
+                    "height": 95
+                },
+                "selected": false,
+                "dragging": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "info-21",
+                "type": "info",
+                "data": {
+                    "id": "info-21",
+                    "markdown": "### moebius mesh"
+                },
+                "position": {
+                    "x": 1208,
+                    "y": -503
+                },
+                "width": 282,
+                "height": 97,
+                "measured": {
+                    "width": 282,
+                    "height": 97
+                },
+                "selected": false,
+                "dragging": false,
+                "resizing": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "sandbox-26",
+                "type": "sandbox",
+                "data": {
+                    "id": "sandbox-26",
+                    "loop": true
+                },
+                "position": {
+                    "x": 2861,
+                    "y": -505
+                },
+                "width": 334,
+                "height": 340,
+                "measured": {
+                    "width": 334,
+                    "height": 340
+                },
+                "selected": false,
+                "dragging": false
+            },
+            {
+                "dragHandle": ".node-drag-handle",
+                "id": "controller-27",
+                "type": "controller",
+                "data": {
+                    "id": "controller-27",
+                    "controller": {
+                        "points": {
+                            "initialValue": 3,
+                            "currentValue": 12,
+                            "type": "range",
+                            "min": 2,
+                            "max": 12
+                        },
+                        "vel": {
+                            "initialValue": 0.5,
+                            "currentValue": 1,
+                            "type": "range",
+                            "min": 0,
+                            "max": 1,
+                            "step": 0.001
+                        }
+                    }
+                },
+                "position": {
+                    "x": 2861,
+                    "y": -75
+                },
+                "width": 180,
+                "measured": {
+                    "width": 180,
+                    "height": 95
+                },
+                "selected": false,
+                "dragging": false
+            }
+        ],
+        "edges": [
+            {
+                "id": "controller-2->sandbox-1",
+                "source": "controller-2",
+                "sourceHandle": "sandbox",
+                "target": "sandbox-1",
+                "targetHandle": "controller",
+                "selected": false
+            },
+            {
+                "source": "editor-5",
+                "sourceHandle": "sandbox",
+                "target": "sandbox-1",
+                "targetHandle": "code",
+                "id": "xy-edge__editor-5sandbox-sandbox-1code",
+                "selected": false
+            },
+            {
+                "id": "editor-5->sandbox-19",
+                "source": "editor-5",
+                "sourceHandle": "sandbox",
+                "target": "sandbox-19",
+                "targetHandle": "code",
+                "selected": false
+            },
+            {
+                "id": "controller-20->sandbox-19",
+                "source": "controller-20",
+                "sourceHandle": "sandbox",
+                "target": "sandbox-19",
+                "targetHandle": "controller",
+                "selected": false
+            },
+            {
+                "id": "editor-5->sandbox-26",
+                "source": "editor-5",
+                "sourceHandle": "sandbox",
+                "target": "sandbox-26",
+                "targetHandle": "code",
+                "selected": false
+            },
+            {
+                "id": "controller-27->sandbox-26",
+                "source": "controller-27",
+                "sourceHandle": "sandbox",
+                "target": "sandbox-26",
+                "targetHandle": "controller",
+                "selected": false
+            }
+        ],
+        "viewport": {
+            "x": -383.64773058758146,
+            "y": 522.3972437399208,
+            "zoom": 0.544168623596346
+        }
+    }
+}
