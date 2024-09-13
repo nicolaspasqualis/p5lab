@@ -28,8 +28,6 @@ import {
   XYPosition,
   getOutgoers,
   getIncomers,
-  Background,
-  BackgroundVariant
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
