@@ -27,7 +27,9 @@ import {
   ReactFlowJsonObject,
   XYPosition,
   getOutgoers,
-  getIncomers
+  getIncomers,
+  Background,
+  BackgroundVariant
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -35,7 +37,8 @@ import './../react-flow.css';
 import InfoNode from './InfoNode';
 import { GlobalConsole } from './GlobalConsole';
 import blankState from './../blank.json';
-import helloState from './../hello.json';
+import homeState from './../home.json';
+import introState from './../intro.json';
 import moebiusState from './../moebius-mesh.json';
 import { Toggle } from './controls/Toggle';
 import { useDnD } from '../context/DragAndDropContext';
@@ -196,13 +199,18 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     const path = location.pathname;
     // only loads preset flows for the following hash paths:
-    if (path === '/') { //
-      loadState(helloState);
+    if (path === '/') {
+      loadState(homeState);
       return;
     }
     // blank project
     if (path === '/new') {
       loadState(blankState);
+      return;
+    }
+    // introduction to p5lab
+    if (path === '/intro') {
+      loadState(introState);
       return;
     }
     // examples
@@ -213,7 +221,7 @@ const FlowEditor: React.FC = () => {
   }, [location]);
   
   useEffect(() => {
-    document.title = projectName + ' — p5lab';
+    document.title = projectName ? projectName + ' — p5lab' : 'p5lab';
   }, [projectName]);
 
   useEffect(() => {
@@ -262,6 +270,7 @@ const FlowEditor: React.FC = () => {
         try {
             const state = JSON.parse(String(result));
             loadState(state);
+            navigate('/project');
         } catch (error) {
             console.error("Error parsing the imported file", error);
             alert("Failed to parse the state file.");
@@ -333,7 +342,7 @@ const FlowEditor: React.FC = () => {
     }
 
     const controllerSiblings = getIncomers(sandboxNode, getNodes(), getEdges()).filter((n)=> n.type === 'controller');
-    const position = getPositionAlongSideNodes([sandboxNode].concat(controllerSiblings), "vertical", 90);
+    const position = getPositionAlongSideNodes([sandboxNode].concat(controllerSiblings), "vertical", 80);
 
     const id = generateId('controller');
     const newNode: Node = CreateControllerNode(id, controller, position);
@@ -438,7 +447,7 @@ const FlowEditor: React.FC = () => {
       >
         <Panel position={'top-left'} className='m-2'>
           <div className='flex flex-row gap-1 items-center'>
-            { location.pathname === '/'
+            { location.pathname === '/' || location.pathname === '/intro'
               ? <Button onClick={()=> {navigate('/new')}}><span className='text-[#3700ff]'>new</span></Button>
               : <label className='m-[1px] px-1 py-0 text-black bg-white w-auto rounded'>
                   <span>project:</span>
