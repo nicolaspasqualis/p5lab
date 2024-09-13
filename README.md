@@ -9,7 +9,7 @@ It aims to make algorithmic design workflows easier, with tools for executing mu
 
 ### [p5lab web ↗](https://nicolaspasqualis.github.io/p5lab/)
 
-Check out the [intro example ↗](https://nicolaspasqualis.github.io/p5lab/) or open a [blank flow ↗](https://nicolaspasqualis.github.io/p5lab/#/new).
+Check out the [intro example ↗](https://nicolaspasqualis.github.io/p5lab/#/intro) or open a [blank flow ↗](https://nicolaspasqualis.github.io/p5lab/#/new).
 
 ![](./doc/intro.png)
 > ⚠ The API _will_ have breaking changes. Usage in "serious" projects is discouraged until the tool is proven to be stable and data loss is no longer a risk. Please open an issue if _spooky_ behaviour is encountered.
