@@ -258,8 +258,6 @@ const FlowEditor: React.FC = () => {
   const onImport = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target?.files && event.target?.files[0];
     if (!file) { return; }
-    
-    console.log(file);
 
     const reader = new FileReader();
     reader.onload = function(event) {

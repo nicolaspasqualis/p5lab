@@ -1,8 +1,7 @@
-![Static Badge](https://img.shields.io/badge/⚠-wip-yellow?style=flat-square)
-
 ![p5lab](./doc/p5lab.gif)
 
-# [p5lab](https://nicolaspasqualis.github.io/p5lab/)
+# [p5lab](https://nicolaspasqualis.github.io/p5lab/)  ![Static Badge](https://img.shields.io/badge/wip-yellow?style=flat-square)
+
 p5lab is a canvas-style interface for running, comparing and experimenting with [p5.js](https://p5js.org/) code in the browser. 
 
 It aims to make algorithmic design workflows easier, with tools for executing multiple stateful instances of the same sketch, modifying parameters using GUI controls (sliders, toggles, text inputs, button triggers, etc), exporting renders, reducing the redraw loop for static designs, and others.
@@ -52,6 +51,7 @@ https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
 * Provided as a default global object to the sandbox.
 * Contains a method to define controller parameters ```p5lab.controls({})```
 
+
 ## Planned
 - API documentation.
 - Global undo-redo.
@@ -62,6 +62,7 @@ https://github.com/user-attachments/assets/50932e4f-abaa-4048-b717-a70268c6abb1
 - Multi-select node operations.
 - External files / assets.
 - Project management.
+
 
 ## Design 
 p5lab doesn't provide a full node-based computational flow. At the moment, sandboxes are meant to run p5.js sketches and have no API to talk with other sandbox nodes.

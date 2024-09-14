@@ -40,13 +40,8 @@ const ControllerNode: React.FC<NodeProps<ControllerNodeProps>> = ({ data, positi
   }, [contentHeight])
 
   /**
-   * TODO
-   * 
-   * sanitize controller schema! an invalid controller def-
-   * inition coming from a user-script could cause a crash.
-   * 
+   * TODO: sanitize controller schema
    */
-
 
   const handleCenterOnNode = () => {
     setCenter(
